@@ -1,0 +1,560 @@
+/* ══════════════════════════════════════════
+   LAYOUT GERAL DA ETAPA (igual etapa1/etapa2)
+══════════════════════════════════════════ */
+.pedido-wrap {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px 60px;
+}
+
+.pedido-header {
+    margin-bottom: 28px;
+}
+
+.pedido-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--azul);
+    margin-bottom: 4px;
+}
+
+.pedido-subtitulo {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* ══════════════════════════════════════════
+   BARRA DE PROGRESSO
+══════════════════════════════════════════ */
+.progresso-wrap {
+    background: white;
+    border: 1px solid var(--cinza-b);
+    padding: 20px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.prog-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.prog-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 55%;
+    width: 90%;
+    height: 2px;
+    background: var(--cinza-b);
+    z-index: 0;
+}
+
+.prog-step.feito:not(:last-child)::after,
+.prog-step.ativo:not(:last-child)::after {
+    background: var(--azul-claro);
+}
+
+.prog-circulo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    border: 2px solid var(--cinza-b);
+    background: white;
+    color: #94a3b8;
+    z-index: 1;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.prog-step.feito .prog-circulo {
+    background: var(--azul-claro);
+    border-color: var(--azul-claro);
+    color: white;
+}
+
+.prog-step.ativo .prog-circulo {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(12,45,107,0.12);
+}
+
+.prog-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-top: 6px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.prog-step.ativo .prog-label { color: var(--azul); font-weight: 700; }
+.prog-step.feito .prog-label { color: var(--azul-claro); }
+
+/* ══════════════════════════════════════════
+   CORPO DO FORMULÁRIO
+══════════════════════════════════════════ */
+.pedido-card {
+    background: white;
+    border: 1px solid var(--cinza-b);
+    overflow: hidden;
+}
+
+/* ── Aviso informativo (topo) ── */
+.aviso-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px 32px;
+    background: #eff6ff;
+    border-bottom: 1px solid var(--cinza-f);
+    font-size: 13.5px;
+    color: #1e3a5f;
+}
+
+.aviso-info i {
+    font-size: 16px;
+    color: var(--azul-claro);
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.aviso-info strong { color: var(--azul); }
+
+.aviso-info p {
+    margin: 0;
+}
+
+.aviso-info p + p {
+    margin-top: 8px;
+}
+
+/* ── Secções ── */
+.form-secao {
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--cinza-f);
+}
+
+.form-secao:last-of-type {
+    border-bottom: none;
+}
+
+.form-secao-titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--azul);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-secao-titulo i {
+    width: 28px;
+    height: 28px;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--azul-claro);
+    flex-shrink: 0;
+}
+
+.form-secao-sub {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: none;
+    letter-spacing: normal;
+    margin-left: 4px;
+}
+
+/* ══════════════════════════════════════════
+   CARTÕES DE DOCUMENTO
+══════════════════════════════════════════ */
+.doc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.doc-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid var(--cinza-b);
+    padding: 16px 18px;
+    min-width: 0;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.doc-card.enviado {
+    border-color: #86efac;
+    background: #f0fdf4;
+}
+
+.doc-card-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 200px;
+}
+
+.doc-card-icon {
+    width: 38px;
+    height: 38px;
+    background: #eff6ff;
+    color: var(--azul-claro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.doc-card.enviado .doc-card-icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.doc-card-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.doc-card-titulo {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #334155;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.doc-card-formato {
+    font-size: 11.5px;
+    color: var(--muted);
+}
+
+.doc-card-acoes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* ── Badges de status ── */
+.doc-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.doc-status.pendente {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.doc-status.enviado {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+/* ── Botões de acção dos documentos ── */
+.btn-doc {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border: 1px solid var(--cinza-b);
+    background: white;
+    color: var(--azul);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+}
+
+.btn-doc:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.btn-doc.btn-doc-primario {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: white;
+}
+
+.btn-doc.btn-doc-primario:hover {
+    background: var(--azul-med);
+}
+
+.btn-doc-remover {
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.btn-doc-remover:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+/* ── Lista de outros documentos ── */
+.outros-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.outros-lista:empty {
+    margin-top: 0;
+}
+
+.outro-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid var(--cinza-b);
+    padding: 12px 16px;
+    background: #f8fafc;
+}
+
+.outro-item-nome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #334155;
+    min-width: 0;
+}
+
+.outro-item-nome i {
+    color: var(--azul-claro);
+    flex-shrink: 0;
+}
+
+.outro-item-nome span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Rodapé do formulário ── */
+.pedido-rodape {
+    padding: 20px 32px;
+    border-top: 1px solid var(--cinza-f);
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.btn-cancelar-pedido {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #334155;
+    background: white;
+    border: 1.2px solid var(--cinza-b);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.btn-cancelar-pedido:hover { background: var(--cinza-f); }
+
+.btn-proximo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: white;
+    background: var(--azul);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+}
+
+.btn-proximo:hover { background: var(--azul-med); }
+
+.btn-proximo:disabled,
+.btn-proximo.desabilitado {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
+   MODAL DE UPLOAD (estilo próprio, sem Bootstrap)
+══════════════════════════════════════════ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-overlay.aberto {
+    display: flex;
+}
+
+.modal-box {
+    background: white;
+    max-width: 420px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--cinza-f);
+}
+
+.modal-titulo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--azul);
+}
+
+.modal-fechar {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+}
+
+.modal-fechar:hover { color: #334155; }
+
+.modal-corpo {
+    padding: 22px;
+}
+
+.modal-corpo .campo-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.modal-corpo input[type="file"] {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid var(--cinza-b);
+    font-size: 13px;
+    background: white;
+}
+
+.modal-ajuda {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.modal-progresso {
+    margin-top: 14px;
+    height: 6px;
+    background: var(--cinza-f);
+    overflow: hidden;
+    display: none;
+}
+
+.modal-progresso.ativo { display: block; }
+
+.modal-progresso-barra {
+    height: 100%;
+    width: 100%;
+    background: var(--azul-claro);
+    animation: progresso-indeterminado 1.2s infinite;
+}
+
+@keyframes progresso-indeterminado {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.modal-rodape {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--cinza-f);
+    background: #f8fafc;
+}
+
+.modal-rodape .btn-doc {
+    padding: 9px 18px;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVO
+══════════════════════════════════════════ */
+@media (max-width: 640px) {
+    .doc-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .doc-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .doc-card-acoes {
+        width: 100%;
+        justify-content: flex-end;
+        margin-left: 0;
+    }
+
+    .progresso-wrap { overflow-x: auto; }
+    .prog-label { display: none; }
+    .form-secao { padding: 20px 18px; }
+    .aviso-info { padding: 14px 18px; }
+    .pedido-rodape { padding: 16px 18px; }
+}

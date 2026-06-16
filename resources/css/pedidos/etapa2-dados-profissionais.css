@@ -1,0 +1,470 @@
+/* ══════════════════════════════════════════
+   LAYOUT GERAL DA ETAPA
+══════════════════════════════════════════ */
+.pedido-wrap {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px 60px;
+}
+
+/* Cabeçalho do pedido */
+.pedido-header {
+    margin-bottom: 28px;
+}
+
+.pedido-tipo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: #eff6ff;
+    color: var(--azul-claro);
+    border: 1px solid #bfdbfe;
+    margin-bottom: 10px;
+}
+
+.pedido-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--azul);
+    margin-bottom: 4px;
+}
+
+.pedido-subtitulo {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* ══════════════════════════════════════════
+   BARRA DE PROGRESSO
+══════════════════════════════════════════ */
+.progresso-wrap {
+    background: white;
+    border: 1px solid var(--cinza-b);
+    padding: 20px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.prog-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* linha entre steps */
+.prog-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 55%;
+    width: 90%;
+    height: 2px;
+    background: var(--cinza-b);
+    z-index: 0;
+}
+
+.prog-step.feito:not(:last-child)::after,
+.prog-step.ativo:not(:last-child)::after {
+    background: var(--azul-claro);
+}
+
+.prog-circulo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    border: 2px solid var(--cinza-b);
+    background: white;
+    color: #94a3b8;
+    z-index: 1;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.prog-step.feito .prog-circulo {
+    background: var(--azul-claro);
+    border-color: var(--azul-claro);
+    color: white;
+}
+
+.prog-step.ativo .prog-circulo {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(12,45,107,0.12);
+}
+
+.prog-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-top: 6px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.prog-step.ativo .prog-label { color: var(--azul); font-weight: 700; }
+.prog-step.feito .prog-label { color: var(--azul-claro); }
+
+/* ══════════════════════════════════════════
+   CORPO DO FORMULÁRIO
+══════════════════════════════════════════ */
+.pedido-card {
+    background: white;
+    border: 1px solid var(--cinza-b);
+    overflow: hidden;
+}
+
+/* ── Topo — preview da etapa 1 + resumo profissional ── */
+.pedido-preview-topo {
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-med) 100%);
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+/* Bloco resumo etapa 1 */
+.preview-etapa1-resumo {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    flex: 1.2;
+    min-width: 0;
+}
+
+.preview-etapa-icon {
+    width: 46px;
+    height: 46px;
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: rgba(255,255,255,0.85);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+/* Foto carregada na etapa 1, exibida dentro do ícone do cabeçalho */
+.foto-preview-etapa2 {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.preview-etapa-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.preview-etapa-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.preview-etapa-nome {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preview-etapa-sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 2px;
+}
+
+.preview-etapa-sub span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.60);
+}
+
+.preview-etapa-sub span i {
+    font-size: 10px;
+    color: var(--ouro, #e2b45a);
+}
+
+/* Separador vertical */
+.pedido-preview-topo::before {
+    content: none;
+}
+
+/* Bloco preview profissional */
+.preview-prof-wrap {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+    border-left: 1px solid rgba(255,255,255,0.12);
+    padding-left: 32px;
+}
+
+.preview-prof-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.preview-campo-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.preview-campo-valor {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.90);
+    min-height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preview-campo-valor.vazio {
+    color: rgba(255,255,255,0.30);
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* ── Secções do formulário ── */
+.form-secao {
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--cinza-f);
+}
+
+.form-secao:last-of-type {
+    border-bottom: none;
+}
+
+.form-secao-titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--azul);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-secao-titulo i {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--azul-claro);
+    flex-shrink: 0;
+}
+
+/* ── Campos ── */
+.form-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.form-grid-2 { grid-template-columns: 1fr 1fr; }
+.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.campo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.campo-obrigatorio {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.campo-input,
+.campo-select {
+    padding: 10px 13px;
+    border-radius: 8px;
+    border: 1px solid var(--cinza-b);
+    font-size: 13.5px;
+    color: var(--texto);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+    font-family: inherit;
+}
+
+.campo-input:focus,
+.campo-select:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147,197,253,0.20);
+}
+
+.campo-input.erro,
+.campo-select.erro {
+    border-color: #fca5a5;
+    background: #fef2f2;
+}
+
+.campo-input[readonly] {
+    background: var(--cinza-f);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+.campo-erro {
+    font-size: 11.5px;
+    color: #b91c1c;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Rodapé do formulário ── */
+.pedido-rodape {
+    padding: 20px 32px;
+    border-top: 0.5px solid var(--cinza-f);
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.btn-cancelar-pedido {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #334155;
+    background: white;
+    border: 1px solid var(--cinza-b);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.btn-cancelar-pedido:hover { background: var(--cinza-f); }
+
+.btn-proximo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: white;
+    background: var(--azul);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-proximo:hover { background: var(--azul-med); }
+
+/* ══════════════════════════════════════════
+   RESPONSIVO
+══════════════════════════════════════════ */
+@media (max-width: 640px) {
+    .pedido-preview-topo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .preview-prof-wrap {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid rgba(255,255,255,0.12);
+        padding-top: 16px;
+        width: 100%;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .preview-etapa-sub {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form-grid-2,
+    .form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid-2 .campo-wrap[style*="span 2"],
+    .form-grid-3 .campo-wrap[style*="span 3"] {
+        grid-column: span 1 !important;
+    }
+
+    .progresso-wrap { overflow-x: auto; }
+    .prog-label { display: none; }
+    .form-secao { padding: 20px 18px; }
+    .pedido-rodape { padding: 16px 18px; }
+}
+
+.preview-foto-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #e5e7eb;
+}
+
+.preview-foto-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-foto-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    color: #9ca3af;
+    font-size: 24px;
+}
