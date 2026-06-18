@@ -4,7 +4,8 @@ COPY . /app
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
 
 FROM php:8.2-fpm
-# Instalar dependências do sistema e extensões PHP
+
+# Instalar dependências e extensões (GD e MySQL)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -13,27 +14,28 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    && docker-php-ext-install gd pdo_mysql zip mbstring exif pcntl bcmath \
-    && docker-php-ext-enable gd
+    && docker-php-ext-install gd pdo_mysql zip mbstring exif pcntl bcmath
 
-# Copiar o composer do build anterior
+# Copiar vendor e app
 COPY --from=build /app /app
 WORKDIR /app
 
-# Copiar o ficheiro de configuração padrão do PHP-FPM e configurar o caminho
+# Configurar PHP-FPM para não limpar variáveis de env
 RUN cp /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf \
     && echo "clear_env = no" >> /usr/local/etc/php-fpm.d/www.conf
 
-# Permissões de escrita (Storage)
+# Permissões
 RUN chown -R www-data:www-data /app \
     && chmod -R 775 /app/storage \
     && chmod -R 775 /app/bootstrap/cache
 
-# Expor a porta 9000 (PHP-FPM) e 80 (O Railway espera a 80, mas vamos usar o script)
-EXPOSE 9000
+# Criar um script de start inline (sem precisar de ficheiro .sh externo)
+RUN echo '#!/bin/bash\n\
+php artisan migrate --force --isolated=step || true\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
+php artisan storage:link || true\n\
+php-fpm -F -R' > /usr/local/bin/start-app.sh && chmod +x /usr/local/bin/start-app.sh
 
-# Script de entrada para rodar migrations e iniciar o PHP-FPM
-COPY start-container.sh /usr/local/bin/start-container.sh
-RUN chmod +x /usr/local/bin/start-container.sh
-
-CMD ["start-container.sh"]
+CMD ["/usr/local/bin/start-app.sh"]
