@@ -9,6 +9,14 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // ─────────────────────────────────────────────────────────────
+        //  SEGURANÇA: Só executa se a tabela já existir.
+        //  Isso evita crash em bases de dados novas/limpas.
+        // ─────────────────────────────────────────────────────────────
+        if (!Schema::hasTable('applications')) {
+            return;
+        }
+
         Schema::table('applications', function (Blueprint $table) {
             $existentes = array_column(DB::select('DESCRIBE applications'), 'Field');
 
@@ -88,6 +96,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Proteção extra para o down também
+        if (!Schema::hasTable('applications')) {
+            return;
+        }
+
         Schema::table('applications', function (Blueprint $table) {
             $existentes = array_column(DB::select('DESCRIBE applications'), 'Field');
 
