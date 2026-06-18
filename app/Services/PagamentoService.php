@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ConfiguracaoPagamento;
 use App\Models\Pedido;
 use App\Models\Pagamento;
 use App\Enums\EstadoPedido;
@@ -78,11 +79,24 @@ class PagamentoService
         return $dados["comprovativo"]->store("comprovativos/{$pedido->id}", "private");
     }
 
+    /**
+     * Obtém o pagamento existente ou cria um novo com o valor lido da BD.
+     *
+     * SEGURANÇA: o valor nunca é hardcoded — vem de ConfiguracaoPagamento.
+     * Se o tipo de documento não tiver configuração activa, lança
+     * ModelNotFoundException e a transacção faz rollback automaticamente.
+     */
     private function obterOuCriarPagamento(Pedido $pedido): Pagamento
     {
-        return $pedido->pagamento ?? $pedido->pagamento()->create([
+        if ($pedido->pagamento) {
+            return $pedido->pagamento;
+        }
+
+        $config = ConfiguracaoPagamento::obterParaTipo($pedido->document_type);
+
+        return $pedido->pagamento()->create([
             "status"   => "pending",
-            "amount"   => $pedido->amount ?? 25000,
+            "amount"   => $config->valor,
             "currency" => "AOA",
         ]);
     }

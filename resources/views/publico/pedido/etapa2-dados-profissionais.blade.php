@@ -12,8 +12,12 @@
 
     {{-- Cabeçalho --}}
     <div class="pedido-header">
-        <div class="pedido-titulo">{{ $tipoDocumento === 'carteira' ? 'Pedido de Carteira Profissional' : 'Pedido de Licença Profissional' }}</div>
-        <div class="pedido-subtitulo">Preencha os campos abaixo. Os campos marcados com <span style="color:#ef4444;">*</span> são obrigatórios.</div>
+        <div class="pedido-titulo">
+            {{ $tipoDocumento === 'carteira' ? 'Pedido de Carteira Profissional' : 'Pedido de Licença Profissional' }}
+        </div>
+        <div class="pedido-subtitulo">
+            Preencha os campos abaixo. Os campos marcados com <span style="color:#ef4444;">*</span> são obrigatórios.
+        </div>
     </div>
 
     {{-- Barra de progresso --}}
@@ -39,33 +43,35 @@
     {{-- Card principal --}}
     <div class="pedido-card">
 
-        {{-- Preview --}}
-        @php
-            $dadosEtapa1 = session('dados_etapa1', []);
-            $fotoPath    = $dadosEtapa1['foto_path'] ?? null;
-        @endphp
+        {{--
+            Preview do candidato — resumo dos dados da etapa 1.
+
+            $fotoUrl é gerado no controller (dadosProfissionais) via Storage::disk('public')->exists()
+            antes de criar a URL. Nunca chamar Storage::url() directamente na view.
+            $dadosEtapa1 é passado pelo controller para exibir nome, BI e email.
+        --}}
         <div class="pedido-preview-topo">
             <div class="preview-etapa1-resumo">
 
-                {{-- Foto carregada na etapa 1 substitui o ícone de utilizador, ou ícone de fallback --}}
                 <div class="preview-etapa-icon">
-                    @if($fotoPath)
-                        <img src="{{ Storage::url($fotoPath) }}"
+                    @if(!empty($fotoUrl))
+                        <img src="{{ $fotoUrl }}"
                              alt="Foto de identificação"
                              class="foto-preview-etapa2"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <i class="fas fa-user-check" style="display:none;"></i>
+                             onerror="this.style.display='none';
+                                      this.nextElementSibling.style.display='flex';">
+                        <i class="fas fa-user-check" style="display:none;" aria-hidden="true"></i>
                     @else
-                        <i class="fas fa-user-check"></i>
+                        <i class="fas fa-user-check" aria-hidden="true"></i>
                     @endif
                 </div>
 
                 <div class="preview-etapa-info">
                     <div class="preview-etapa-nome">{{ $dadosEtapa1['nome_completo'] ?? '—' }}</div>
                     <div class="preview-etapa-sub">
-                        <span><i class="fas fa-id-card"></i> {{ $dadosEtapa1['numero_bi'] ?? '—' }}</span>
-                        <span><i class="fas fa-globe"></i> {{ $dadosEtapa1['nacionalidade'] ?? '—' }}</span>
-                        <span><i class="fas fa-envelope"></i> {{ $dadosEtapa1['email'] ?? '—' }}</span>
+                        <span><i class="fas fa-id-card" aria-hidden="true"></i> {{ $dadosEtapa1['numero_bi'] ?? '—' }}</span>
+                        <span><i class="fas fa-globe" aria-hidden="true"></i> {{ $dadosEtapa1['nacionalidade'] ?? '—' }}</span>
+                        <span><i class="fas fa-envelope" aria-hidden="true"></i> {{ $dadosEtapa1['email'] ?? '—' }}</span>
                     </div>
                 </div>
             </div>
@@ -94,7 +100,7 @@
             {{-- ── SECÇÃO 1: Dados Académicos (OBRIGATÓRIO) ── --}}
             <div class="form-secao">
                 <div class="form-secao-titulo">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-graduation-cap" aria-hidden="true"></i>
                     Dados Académicos
                 </div>
 
@@ -114,7 +120,6 @@
                         @enderror
                     </div>
 
-                    {{-- Curso — vem da BD via $cursos --}}
                     <div class="campo-wrap" style="grid-column: span 2;">
                         <label class="campo-label" for="curso_id">
                             Curso <span class="campo-obrigatorio">*</span>
@@ -159,7 +164,6 @@
                             Classe <span class="campo-obrigatorio">*</span>
                         </label>
 
-                        {{-- Médio --}}
                         <select id="classeMedio" name="classe"
                                 class="campo-select {{ $errors->has('classe') ? 'erro' : '' }}"
                                 style="display:none;">
@@ -170,7 +174,6 @@
                             <option value="13"  {{ old('classe', $dadosAnteriores['classe'] ?? '') === '13'  ? 'selected' : '' }}>13.ª Classe</option>
                         </select>
 
-                        {{-- Superior --}}
                         <select id="classeSuperior" name="classe"
                                 class="campo-select {{ $errors->has('classe') ? 'erro' : '' }}"
                                 style="display:none;">
@@ -182,14 +185,12 @@
                             <option value="5ano" {{ old('classe', $dadosAnteriores['classe'] ?? '') === '5ano' ? 'selected' : '' }}>5.º Ano</option>
                         </select>
 
-                        {{-- Outro --}}
                         <input type="text" id="classeOutro" name="classe"
                                class="campo-input {{ $errors->has('classe') ? 'erro' : '' }}"
                                value="{{ old('classe', $dadosAnteriores['classe'] ?? '') }}"
                                placeholder="Descreva a sua classe ou habilitação"
                                style="display:none;">
 
-                        {{-- Placeholder --}}
                         <input type="text" id="classePlaceholder"
                                class="campo-input"
                                placeholder="Selecione primeiro o nível académico"
@@ -206,8 +207,9 @@
             {{-- ── SECÇÃO 2: Dados Profissionais (OPCIONAL) ── --}}
             <div class="form-secao">
                 <div class="form-secao-titulo">
-                    <i class="fas fa-briefcase"></i>
-                    Dados Profissionais <span style="font-size:0.8em; color:#888; font-weight:normal;">(opcional)</span>
+                    <i class="fas fa-briefcase" aria-hidden="true"></i>
+                    Dados Profissionais
+                    <span style="font-size:0.8em; color:#888; font-weight:normal;">(opcional)</span>
                 </div>
 
                 <div class="form-grid form-grid-2">
@@ -226,7 +228,6 @@
                         @enderror
                     </div>
 
-                    {{-- Função — vem da BD via $funcoes --}}
                     <div class="campo-wrap" style="grid-column: span 2;">
                         <label class="campo-label" for="funcao_id">
                             Função que Ocupa
@@ -262,7 +263,6 @@
                         @enderror
                     </div>
 
-                    {{-- Província do trabalho — vem da BD via $provincias --}}
                     <div class="campo-wrap">
                         <label class="campo-label" for="provincia_trabalho_id">
                             Província
@@ -328,10 +328,10 @@
             {{-- Rodapé --}}
             <div class="pedido-rodape">
                 <a href="{{ route('pedido.carteira.form') }}" class="btn-cancelar-pedido">
-                    <i class="fas fa-arrow-left"></i> Voltar
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
                 </a>
                 <button type="submit" class="btn-proximo">
-                    Próximo: Upload de Documentos <i class="fas fa-arrow-right"></i>
+                    Próximo: Upload de Documentos <i class="fas fa-arrow-right" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -343,73 +343,84 @@
 
 @push("scripts")
 <script>
-    // ── AJAX: carregar municípios por província (partilhado entre etapa1 e etapa2) ──
-    async function carregarMunicipios(provinciaId, selectId) {
+(function () {
+    'use strict';
+
+    // ── AJAX: carregar municípios por província ────────────────────────────────
+    window.carregarMunicipios = async function (provinciaId, selectId) {
         const select = document.getElementById(selectId);
+        if (!select) return;
+
         select.innerHTML = '<option value="">A carregar...</option>';
-        select.disabled = true;
+        select.disabled  = true;
 
         if (!provinciaId) {
             select.innerHTML = '<option value="">Selecione a província primeiro</option>';
-            select.disabled = false;
+            select.disabled  = false;
             return;
         }
 
         try {
-            const resp      = await fetch(`/municipios/${provinciaId}`);
+            const resp = await fetch(`/municipios/${encodeURIComponent(provinciaId)}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!resp.ok) throw new Error('Resposta inválida do servidor.');
+
             const municipios = await resp.json();
 
             select.innerHTML = '<option value="">Selecione o município...</option>';
-            municipios.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
+            municipios.forEach(function (m) {
+                const opt       = document.createElement('option');
+                opt.value       = m.id;
                 opt.textContent = m.nome;
                 select.appendChild(opt);
             });
-        } catch (e) {
+        } catch (err) {
+            console.error('[etapa2] Erro ao carregar municípios:', err);
             select.innerHTML = '<option value="">Erro ao carregar municípios</option>';
         }
 
         select.disabled = false;
-    }
+    };
 
     // ── Classe dinâmica conforme nível académico ──────────────────────────────
-    function atualizarClasse(nivel) {
+    window.atualizarClasse = function (nivel) {
         const elMedio       = document.getElementById('classeMedio');
         const elSuperior    = document.getElementById('classeSuperior');
         const elOutro       = document.getElementById('classeOutro');
         const elPlaceholder = document.getElementById('classePlaceholder');
 
-        [elMedio, elSuperior, elOutro].forEach(el => {
+        [elMedio, elSuperior, elOutro].forEach(function (el) {
             el.removeAttribute('name');
             el.style.display = 'none';
-            el.required = false;
+            el.required      = false;
         });
         elPlaceholder.style.display = 'none';
 
         if (nivel === 'medio') {
             elMedio.setAttribute('name', 'classe');
             elMedio.style.display = 'block';
-            elMedio.required = true;
+            elMedio.required      = true;
         } else if (nivel === 'superior') {
             elSuperior.setAttribute('name', 'classe');
             elSuperior.style.display = 'block';
-            elSuperior.required = true;
+            elSuperior.required      = true;
         } else if (nivel === 'outro') {
             elOutro.setAttribute('name', 'classe');
             elOutro.style.display = 'block';
-            elOutro.required = true;
+            elOutro.required      = true;
         } else {
             elPlaceholder.style.display = 'block';
         }
-    }
+    };
 
     // ── Preview em tempo real ─────────────────────────────────────────────────
-    function atualizarPreview() {
+    window.atualizarPreview = function () {
         atualizarCampo('curso_id',         'prevCurso');
         atualizarCampo('nome_instituicao', 'prevInstituicao');
         atualizarCampo('funcao_id',        'prevFuncao');
-    }
+    };
 
     function atualizarCampo(idCampo, idPreview) {
         const el   = document.getElementById(idCampo);
@@ -428,22 +439,24 @@
     }
 
     // ── Inicialização ─────────────────────────────────────────────────────────
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async function () {
         // Restaurar nível e classe após erro de validação
         const nivelSalvo = document.getElementById('nivel').value;
         if (nivelSalvo) atualizarClasse(nivelSalvo);
 
         // Restaurar município de trabalho após erro de validação
-        @if(old('provincia_trabalho_id') || !empty($dadosAnteriores['provincia_trabalho_id']))
-            await carregarMunicipios(
-                '{{ old('provincia_trabalho_id', $dadosAnteriores['provincia_trabalho_id'] ?? '') }}',
-                'municipio_trabalho_id'
-            );
-            document.getElementById('municipio_trabalho_id').value =
-                '{{ old('municipio_trabalho_id', $dadosAnteriores['municipio_trabalho_id'] ?? '') }}';
-        @endif
+        const provTrabalhoId = '{{ old('provincia_trabalho_id', $dadosAnteriores['provincia_trabalho_id'] ?? '') }}';
+        const munTrabalhoId  = '{{ old('municipio_trabalho_id', $dadosAnteriores['municipio_trabalho_id'] ?? '') }}';
+
+        if (provTrabalhoId) {
+            await carregarMunicipios(provTrabalhoId, 'municipio_trabalho_id');
+            const sel = document.getElementById('municipio_trabalho_id');
+            if (sel && munTrabalhoId) sel.value = munTrabalhoId;
+        }
 
         atualizarPreview();
     });
+
+}());
 </script>
 @endpush

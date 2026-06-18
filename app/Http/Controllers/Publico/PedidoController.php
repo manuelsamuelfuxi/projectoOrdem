@@ -9,7 +9,9 @@ use App\Services\PedidoService;
 use App\Services\ProvinciaMunicipioService;
 use App\Models\Curso;
 use App\Models\Funcao;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class PedidoController extends Controller
@@ -138,35 +140,7 @@ class PedidoController extends Controller
         return response()->json(['success' => true, 'message' => $mensagem]);
     }
 
-    // ── Submissão — chamada ao clicar "Próximo" na etapa 3 ───────────────────
-
-    public function submeter(Request $request)
-    {
-        if (!Session::has('dados_etapa1') || !Session::has('dados_etapa2') || !Session::has('documentos_enviados')) {
-            return redirect()->route('pedido.carteira.form')
-                ->with('error', 'Complete todas as etapas primeiro.');
-        }
-
-        [$podeProsseguir, $erro] = $this->pedidoService->validarDocumentosObrigatorios(
-            Session::get('documentos_enviados', [])
-        );
-
-        if (!$podeProsseguir) {
-            return redirect()->route('pedido.upload-documentos')->with('error', $erro);
-        }
-
-        $pedido = $this->pedidoService->submeter(
-            Session::get('dados_etapa1'),
-            Session::get('dados_etapa2'),
-            Session::get('documentos_enviados')
-        );
-
-        Session::forget(['dados_etapa1', 'dados_etapa2', 'documentos_enviados']);
-
-        return redirect()->route('consulta.estado', ['id' => $pedido->id]);
-    }
-
-    // ── Etapa 4 (ficha de cobrança — mantida para compatibilidade) ────────────
+    // ── Etapa 4 (ficha de cobrança / revisão) ────────────────────────────────
 
     public function fichaCobranca(Request $request)
     {
@@ -183,12 +157,65 @@ class PedidoController extends Controller
             return redirect()->route('pedido.upload-documentos')->with('error', $erro);
         }
 
-        return view('publico.pedido.etapa4-ficha-cobranca',
-            $this->pedidoService->prepararFichaCobranca(
+        try {
+            $dados = $this->pedidoService->prepararFichaCobranca(
                 Session::get('dados_etapa1'),
                 Session::get('dados_etapa2'),
                 Session::get('documentos_enviados', [])
-            )
-        );
+            );
+        } catch (ModelNotFoundException $e) {
+            // A tabela configuracoes_pagamento não tem registo para este tipo de documento.
+            // Situação de erro de configuração — não expor detalhes ao utilizador.
+            Log::critical('Configuração de pagamento em falta na BD', [
+                'tipo_documento' => Session::get('dados_etapa1.tipo_documento'),
+                'error'          => $e->getMessage(),
+            ]);
+
+            return redirect()->route('pedido.carteira.form')
+                ->with('error', 'Não foi possível carregar a ficha de pagamento. Por favor contacte o suporte.');
+        }
+
+        return view('publico.pedido.etapa4-ficha-cobranca', $dados);
+    }
+
+    // ── Submissão — chamada pelo modal da etapa 4 ────────────────────────────
+
+    public function submeter(Request $request)
+    {
+        if (!Session::has('dados_etapa1') || !Session::has('dados_etapa2') || !Session::has('documentos_enviados')) {
+            return redirect()->route('pedido.carteira.form')
+                ->with('error', 'Complete todas as etapas primeiro.');
+        }
+
+        try {
+            $pedido = $this->pedidoService->submeter(
+                Session::get('dados_etapa1'),
+                Session::get('dados_etapa2'),
+                Session::get('documentos_enviados')
+            );
+        } catch (ModelNotFoundException $e) {
+            Log::critical('Configuração de pagamento em falta durante submissão', [
+                'tipo_documento' => Session::get('dados_etapa1.tipo_documento'),
+                'error'          => $e->getMessage(),
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Não foi possível processar o pedido. Por favor contacte o suporte.');
+        } catch (\InvalidArgumentException $e) {
+            // Documentos obrigatórios em falta — redirecionar para a etapa 3
+            return redirect()->route('pedido.upload-documentos')
+                ->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Erro inesperado na submissão do pedido', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Ocorreu um erro inesperado. Por favor tente novamente ou contacte o suporte.');
+        }
+
+        Session::forget(['dados_etapa1', 'dados_etapa2', 'documentos_enviados']);
+
+        return redirect()->route('consulta.estado', ['id' => $pedido->id]);
     }
 }

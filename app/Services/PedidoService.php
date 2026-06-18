@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Application;
+use App\Models\ConfiguracaoPagamento;
 use App\Models\Curso;
 use App\Models\Documento;
 use App\Models\Funcao;
@@ -101,19 +102,47 @@ class PedidoService
         return [true, null];
     }
 
+    /**
+     * Prepara todos os dados para a etapa 4 (ficha de cobrança / revisão).
+     *
+     * SEGURANÇA: o valor e os dados bancários vêm exclusivamente da BD através
+     * de ConfiguracaoPagamento::obterParaTipo(). Se o tipo de documento não
+     * existir na tabela ou estiver inactivo, lança ModelNotFoundException — o
+     * controller trata esse caso e nunca mostra dados inconsistentes ao utilizador.
+     *
+     * A $fotoUrl é gerada aqui (server-side) e nunca na view, evitando expor
+     * caminhos físicos do servidor e garantindo que só URLs de ficheiros
+     * efectivamente existentes chegam ao template.
+     */
     public function prepararFichaCobranca(array $dadosEtapa1, array $dadosEtapa2, array $documentos): array
     {
-        $valor = $dadosEtapa1['tipo_documento'] === 'carteira' ? 50000 : 75000;
+        // ── Configuração de pagamento vinda da BD ──────────────────────────
+        $tipoDocumento        = $dadosEtapa1['tipo_documento'];
+        $configuracaoPagamento = ConfiguracaoPagamento::obterParaTipo($tipoDocumento);
 
-        $dadosCandidato = $dadosEtapa1;
+        // ── URL da foto (gerada server-side) ───────────────────────────────
+        $fotoUrl = null;
+        $fotoPath = $dadosEtapa1['foto_path'] ?? null;
+
+        if ($fotoPath && Storage::disk('public')->exists($fotoPath)) {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+$disk    = Storage::disk('public');
+$fotoUrl = $disk->url($fotoPath);
+        }
+
+        // ── Dados do candidato enriquecidos com nomes de BD ────────────────
+        $dadosCandidato                   = $dadosEtapa1;
         $dadosCandidato['provincia_nome'] = Provincia::find($dadosEtapa1['provincia_id'])?->nome;
         $dadosCandidato['municipio_nome'] = Municipio::find($dadosEtapa1['municipio_id'])?->nome;
 
-        $dadosProfissionais = $dadosEtapa2;
-        $dadosProfissionais['curso_nome']    = Curso::find($dadosEtapa2['curso_id'])?->nome;
-        $dadosProfissionais['classe_label']  = $this->formatarClasse($dadosEtapa2['nivel'], $dadosEtapa2['classe']);
+        // ── Dados profissionais enriquecidos com nomes de BD ───────────────
+        $dadosProfissionais               = $dadosEtapa2;
+        $dadosProfissionais['curso_nome'] = Curso::find($dadosEtapa2['curso_id'])?->nome;
+        $dadosProfissionais['classe_label'] = $this->formatarClasse(
+            $dadosEtapa2['nivel'],
+            $dadosEtapa2['classe']
+        );
 
-        // Dados profissionais (opcionais) — só resolve se tiverem sido preenchidos
         if (!empty($dadosEtapa2['funcao_id'])) {
             $dadosProfissionais['funcao_nome'] = Funcao::find($dadosEtapa2['funcao_id'])?->nome;
         }
@@ -125,13 +154,21 @@ class PedidoService
         }
 
         return [
-            'tipoDocumento'      => $dadosEtapa1['tipo_documento'],
-            'valor'              => $valor,
-            'dadosCandidato'     => $dadosCandidato,
-            'dadosProfissionais' => $dadosProfissionais,
-            // Referência meramente indicativa para o ecrã de pagamento;
-            // a referência definitiva é gerada em criarPagamento() na submissão.
-            'referencia'         => 'REF-' . strtoupper(uniqid()),
+            'tipoDocumento'         => $tipoDocumento,
+            'dadosCandidato'        => $dadosCandidato,
+            'dadosProfissionais'    => $dadosProfissionais,
+            'documentosEnviados'    => $documentos,
+            'fotoUrl'               => $fotoUrl,
+
+            // Array simples — a view nunca acede ao Model directamente,
+            // o que evita lazy-loading acidental e expõe apenas o necessário.
+            'configuracaoPagamento' => [
+                'valor'        => $configuracaoPagamento->valor,
+                'banco'        => $configuracaoPagamento->banco,
+                'iban'         => $configuracaoPagamento->iban,
+                'beneficiario' => $configuracaoPagamento->beneficiario,
+                'nif'          => $configuracaoPagamento->nif,
+            ],
         ];
     }
 
@@ -300,13 +337,22 @@ class PedidoService
         ]);
     }
 
+    /**
+     * Cria o registo de pagamento com o valor lido da BD.
+     *
+     * SEGURANÇA: o valor nunca vem do request nem está hardcoded.
+     * ConfiguracaoPagamento::obterParaTipo() lança ModelNotFoundException
+     * se o tipo não existir — a transacção faz rollback automaticamente.
+     */
     private function criarPagamento(Application $pedido): void
     {
+        $config = ConfiguracaoPagamento::obterParaTipo($pedido->document_type);
+
         Pagamento::create([
             'application_id'    => $pedido->id,
             'payment_uuid'      => (string) str()->uuid(),
             'payment_reference' => 'REF-' . strtoupper(uniqid()),
-            'amount'            => $pedido->document_type === 'carteira' ? 50000 : 75000,
+            'amount'            => $config->valor,
             'currency'          => 'AOA',
             'status'            => 'pending',
         ]);

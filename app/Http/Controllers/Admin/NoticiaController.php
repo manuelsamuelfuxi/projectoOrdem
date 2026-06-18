@@ -21,31 +21,39 @@ class NoticiaController extends Controller
         return view("admin.noticias.create");
     }
 
-   public function store(GerirNoticiaRequest $request)
-{
-    $dados = $request->validated();
+    public function store(GerirNoticiaRequest $request)
+    {
+        $dados = $request->validated();
 
-    // NoticiaController — método store()
-if ($request->hasFile("imagem")) {
-    // Guarda em storage/app/public/noticias/
-    $caminho = $request->file("imagem")->store("noticias", "public");
-    // $caminho fica como: "noticias/nome_ficheiro.jpg"
-    $dados["image_path"] = $caminho;
-}
+        // Processa o upload da imagem
+        if ($request->hasFile("imagem")) {
+            $caminho = $request->file("imagem")->store("noticias", "public");
+            $dados["imagem_path"] = $caminho; // ✅ Usa o campo correto
+        }
 
-    $dados["criado_por"] = auth()->id();  // era created_by
+        $dados["criado_por"] = auth()->id();
 
-    // Só define data_publicacao se não vier do formulário
-    if (empty($dados["data_publicacao"])) {
-        $dados["data_publicacao"] = $dados["status"] === "publicado" ? now() : null;
+        // Se data_publicacao foi enviada, usa ela; senão, define baseado no status
+        if (!empty($dados["data_publicacao"])) {
+            $dados["publicado_em"] = $dados["data_publicacao"];
+        } elseif ($dados["status"] === "publicado") {
+            $dados["publicado_em"] = now();
+        } else {
+            $dados["publicado_em"] = null;
+        }
+
+        // Remove campos que não estão no fillable
+        unset($dados["data_publicacao"]);
+
+        // LOG DE DEPURAÇÃO
+        \Log::info('Admin - Criando notícia:', $dados);
+
+        Noticia::create($dados);
+
+        return redirect()
+            ->route("admin.noticias.index")
+            ->with("success", "Notícia criada com sucesso!");
     }
-
-    Noticia::create($dados);
-
-    return redirect()
-        ->route("admin.noticias.index")
-        ->with("success", "Notícia criada com sucesso!");
-}
 
     public function edit(Noticia $noticia)
     {
@@ -56,17 +64,32 @@ if ($request->hasFile("imagem")) {
     {
         $dados = $request->validated();
         
+        // Processa o upload da nova imagem
         if ($request->hasFile("imagem")) {
-            if ($noticia->image_path && Storage::disk("public")->exists($noticia->image_path)) {
-                Storage::disk("public")->delete($noticia->image_path);
+            // Remove a imagem antiga
+            if ($noticia->imagem_path && Storage::disk("public")->exists($noticia->imagem_path)) {
+                Storage::disk("public")->delete($noticia->imagem_path);
             }
             
             $caminho = $request->file("imagem")->store("noticias", "public");
-            $dados["image_path"] = $caminho;
+            $dados["imagem_path"] = $caminho;
         }
         
-        $dados["updated_by"] = auth()->id();
-        
+        $dados["atualizado_por"] = auth()->id();
+
+        // Se data_publicacao foi enviada, usa ela; senão, define baseado no status
+        if (!empty($dados["data_publicacao"])) {
+            $dados["publicado_em"] = $dados["data_publicacao"];
+        } elseif ($dados["status"] === "publicado" && empty($noticia->publicado_em)) {
+            $dados["publicado_em"] = now();
+        }
+
+        // Remove campos que não estão no fillable
+        unset($dados["data_publicacao"]);
+
+        // LOG DE DEPURAÇÃO
+        \Log::info('Admin - Atualizando notícia:', $dados);
+
         $noticia->update($dados);
         
         return redirect()
@@ -76,8 +99,9 @@ if ($request->hasFile("imagem")) {
 
     public function destroy(Noticia $noticia)
     {
-        if ($noticia->image_path && Storage::disk("public")->exists($noticia->image_path)) {
-            Storage::disk("public")->delete($noticia->image_path);
+        // Remove a imagem associada
+        if ($noticia->imagem_path && Storage::disk("public")->exists($noticia->imagem_path)) {
+            Storage::disk("public")->delete($noticia->imagem_path);
         }
         
         $noticia->delete();
@@ -90,8 +114,8 @@ if ($request->hasFile("imagem")) {
     public function publicar(Noticia $noticia)
     {
         $noticia->update([
-            "status" => "published",
-            "published_at" => now()
+            "status" => "publicado",
+            "publicado_em" => now()
         ]);
         
         return redirect()
@@ -101,7 +125,9 @@ if ($request->hasFile("imagem")) {
 
     public function arquivar(Noticia $noticia)
     {
-        $noticia->update(["status" => "archived"]);
+        $noticia->update([
+            "status" => "arquivado"
+        ]);
         
         return redirect()
             ->route("admin.noticias.index")

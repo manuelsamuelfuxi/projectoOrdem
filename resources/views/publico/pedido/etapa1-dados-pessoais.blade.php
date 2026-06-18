@@ -43,22 +43,28 @@
         <div class="pedido-preview-topo">
 
             {{-- Foto tipo passe --}}
-            <div class="foto-passe-wrap">
-                <div class="foto-passe-placeholder" id="fotoPlaceholder"
-                     onclick="document.getElementById('inputFoto').click()">
-                    <i class="fas fa-camera"></i>
-                    <span>Clique para<br>adicionar foto</span>
-                </div>
-                <img id="fotoPreview" class="foto-passe"
-                     src="" alt="Foto" style="display:none;">
-                <div class="foto-btn-trocar" title="Trocar foto"
-                     onclick="document.getElementById('inputFoto').click()"
-                     style="display:none;" id="fotoBtnTrocar">
-                    <i class="fas fa-camera"></i>
-                </div>
-                <input type="file" id="inputFoto" name="foto" accept="image/*"
-                       style="display:none;" onchange="previewFoto(this)">
-            </div>
+<div class="foto-passe-wrap">
+    <div class="foto-passe-placeholder" id="fotoPlaceholder"
+         onclick="document.getElementById('inputFoto').click()">
+        <i class="fas fa-camera"></i>
+        <span>Clique para<br>adicionar foto</span>
+    </div>
+    <img id="fotoPreview" class="foto-passe"
+         src="" alt="Foto" style="display:none;">
+    <div class="foto-btn-trocar" title="Trocar foto"
+         onclick="document.getElementById('inputFoto').click()"
+         style="display:none;" id="fotoBtnTrocar">
+        <i class="fas fa-camera"></i>
+    </div>
+    
+    {{-- 🔥 INPUT CORRIGIDO - opacity 0 em vez de display:none --}}
+    <div style="position: relative; width: 100%; height: 0; overflow: visible;">
+        <input type="file" id="inputFoto" name="foto" accept="image/*"
+               style="position: absolute; top: 0; left: 0; opacity: 0; 
+                      width: 100%; height: 100%; cursor: pointer; z-index: 10;"
+               onchange="previewFoto(this)">
+    </div>
+</div>
 
             {{-- Dados em tempo real --}}
             <div class="preview-info">

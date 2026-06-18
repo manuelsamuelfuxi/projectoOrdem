@@ -9,18 +9,29 @@
 @section("content")
 
 @php
-    $statusVal = $pedido->status instanceof \UnitEnum ? $pedido->status->value : (string) $pedido->status;
+    /*
+     * SEGURANÇA: todos os valores exibidos vêm do Model $pedido carregado pelo
+     * controller via BD. O valor monetário vem do relacionamento $pedido->pagamento
+     * — nunca de fallback hardcoded na view.
+     *
+     * O controller deve eager-load o relacionamento:
+     *   $pedido = Application::with('pagamento')->findOrFail($id);
+     */
+
+    $statusVal = $pedido->status instanceof \UnitEnum
+        ? $pedido->status->value
+        : (string) $pedido->status;
 
     $statusLabels = [
-    'nao_pago'             => 'Aguardando Pagamento',
-    'aguarda_comprovativo' => 'Aguarda Validação',  // ← era "Aguarda Comprovativo"
-    'pagamento_confirmado' => 'Pagamento Confirmado',
-    'em_analise'           => 'Em Análise',
-    'aprovado'             => 'Aprovado',
-    'documento_emitido'    => 'Documento Emitido',
-    'rejeitado'            => 'Rejeitado',
-    'correcao_solicitada'  => 'Correcção Solicitada',
-];
+        'nao_pago'             => 'Aguardando Pagamento',
+        'aguarda_comprovativo' => 'Aguarda Validação',
+        'pagamento_confirmado' => 'Pagamento Confirmado',
+        'em_analise'           => 'Em Análise',
+        'aprovado'             => 'Aprovado',
+        'documento_emitido'    => 'Documento Emitido',
+        'rejeitado'            => 'Rejeitado',
+        'correcao_solicitada'  => 'Correcção Solicitada',
+    ];
 
     $statusBadgeClass = [
         'nao_pago'             => 'badge-nao-pago',
@@ -41,15 +52,15 @@
     ];
 
     $ordemStatus = [
-    'nao_pago'             => 0,
-    'aguarda_comprovativo' => 2,  // ← era 1, passa para 2
-    'pagamento_confirmado' => 2,
-    'em_analise'           => 2,
-    'aprovado'             => 3,
-    'documento_emitido'    => 3,
-    'rejeitado'            => -1,
-    'correcao_solicitada'  => 1,
-];
+        'nao_pago'             => 0,
+        'aguarda_comprovativo' => 2,
+        'pagamento_confirmado' => 2,
+        'em_analise'           => 2,
+        'aprovado'             => 3,
+        'documento_emitido'    => 3,
+        'rejeitado'            => -1,
+        'correcao_solicitada'  => 1,
+    ];
 
     $indiceActual = $ordemStatus[$statusVal] ?? 0;
 
@@ -64,19 +75,34 @@
         'correcao_solicitada'  => 'Foi solicitada uma correcção à tua candidatura. Verifica os dados e resubmete.',
     ];
 
-    $jaEnviouComprovativo = $statusVal === 'aguarda_comprovativo';
+    $jaEnviouComprovativo     = $statusVal === 'aguarda_comprovativo';
     $podeSubmeterComprovativo = in_array($statusVal, ['nao_pago', 'aguarda_comprovativo']);
+
+    /*
+     * Valor monetário — vem exclusivamente do registo de pagamento na BD.
+     * Se o pagamento ainda não existir (situação anómala), mostra '—' em vez
+     * de um valor hardcoded incorreto.
+     *
+     * O controller deve garantir eager-load: Application::with('pagamento')->findOrFail($id)
+     */
+    $valorPagamento = $pedido->pagamento?->amount ?? null;
 @endphp
 
 <div class="status-wrap">
     <div class="row">
         <div class="col-md-9 mx-auto">
 
-            {{-- Mensagem de sucesso --}}
             @if(session('success'))
-                <div class="alert-sucesso">
-                    <i class="fas fa-check-circle"></i>
+                <div class="alert-sucesso" role="alert">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
                     {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert-erro" role="alert">
+                    <i class="fas fa-times-circle" aria-hidden="true"></i>
+                    {{ session('error') }}
                 </div>
             @endif
 
@@ -96,7 +122,12 @@
                     <div class="doc-ref">
                         <span><strong>Processo:</strong> {{ $pedido->process_number }}</span>
                         <span><strong>BI:</strong> {{ $pedido->bi_number }}</span>
-                        <span><strong>Submetido:</strong> {{ $pedido->submitted_at ? $pedido->submitted_at->format('d/m/Y') : now()->format('d/m/Y') }}</span>
+                        <span>
+                            <strong>Submetido:</strong>
+                            {{ $pedido->submitted_at
+                                ? $pedido->submitted_at->format('d/m/Y')
+                                : $pedido->created_at->format('d/m/Y') }}
+                        </span>
                     </div>
                 </div>
 
@@ -107,19 +138,19 @@
                     <div class="doc-grid doc-grid-2">
                         <div class="doc-campo">
                             <span class="doc-label">Nome completo</span>
-                            <span class="doc-valor">{{ $pedido->full_name ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->full_name ?? '—' }}</span>
                         </div>
                         <div class="doc-campo">
                             <span class="doc-label">Nº do bilhete de identidade</span>
-                            <span class="doc-valor">{{ $pedido->bi_number ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->bi_number ?? '—' }}</span>
                         </div>
                         <div class="doc-campo">
                             <span class="doc-label">Email</span>
-                            <span class="doc-valor">{{ $pedido->email ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->email ?? '—' }}</span>
                         </div>
                         <div class="doc-campo">
                             <span class="doc-label">Telefone</span>
-                            <span class="doc-valor">{{ $pedido->phone ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->phone ?? '—' }}</span>
                         </div>
                     </div>
 
@@ -128,19 +159,23 @@
                     <div class="doc-grid doc-grid-2">
                         <div class="doc-campo">
                             <span class="doc-label">Tipo de pedido</span>
-                            <span class="doc-valor">{{ ($pedido->type ?? '') === 'carteira' ? 'Carteira Profissional' : 'Licença Profissional' }}</span>
+                            <span class="doc-valor">
+                                {{ ($pedido->document_type ?? '') === 'carteira'
+                                    ? 'Carteira Profissional'
+                                    : 'Licença Profissional' }}
+                            </span>
                         </div>
                         <div class="doc-campo">
                             <span class="doc-label">Profissão</span>
-                            <span class="doc-valor">{{ $pedido->profession ?? $pedido->specialty ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->profession ?? $pedido->specialty ?? '—' }}</span>
                         </div>
                         <div class="doc-campo">
                             <span class="doc-label">Habilitações</span>
-                            <span class="doc-valor">{{ $pedido->qualification ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->qualification ?? '—' }}</span>
                         </div>
                         <div class="doc-campo">
                             <span class="doc-label">Província</span>
-                            <span class="doc-valor">{{ $pedido->province ?? '---' }}</span>
+                            <span class="doc-valor">{{ $pedido->province ?? '—' }}</span>
                         </div>
                     </div>
 
@@ -149,8 +184,8 @@
 
                     <div class="estado-linha">
                         <span class="status-badge {{ $statusBadgeClass[$statusVal] ?? 'badge-aguarda' }}">
-                            <i class="fas fa-circle" style="font-size: 0.45rem;"></i>
-                            {{ $statusLabels[$statusVal] ?? '---' }}
+                            <i class="fas fa-circle" style="font-size: 0.45rem;" aria-hidden="true"></i>
+                            {{ $statusLabels[$statusVal] ?? '—' }}
                         </span>
                         <span class="estado-data">
                             Última actualização: {{ $pedido->updated_at->format('d/m/Y \à\s H:i') }}
@@ -174,11 +209,11 @@
                             <div class="step {{ $stepClass }}">
                                 <div class="step-circle">
                                     @if($stepClass === 'done')
-                                        <i class="fas fa-check"></i>
+                                        <i class="fas fa-check" aria-hidden="true"></i>
                                     @elseif($stepClass === 'erro')
-                                        <i class="fas fa-times"></i>
+                                        <i class="fas fa-times" aria-hidden="true"></i>
                                     @else
-                                        <i class="fas {{ $passo['icon'] }}"></i>
+                                        <i class="fas {{ $passo['icon'] }}" aria-hidden="true"></i>
                                     @endif
                                 </div>
                                 <div class="step-label">{{ $passo['label'] }}</div>
@@ -187,15 +222,27 @@
                     </div>
 
                     {{-- Nota informativa --}}
-                    <div class="nota {{ $statusVal === 'rejeitado' ? 'nota-erro' : '' }}">
-                        <i class="fas {{ $statusVal === 'rejeitado' ? 'fa-times-circle' : 'fa-info-circle' }}"></i>
+                    <div class="nota {{ $statusVal === 'rejeitado' ? 'nota-erro' : '' }}" role="status">
+                        <i class="fas {{ $statusVal === 'rejeitado' ? 'fa-times-circle' : 'fa-info-circle' }}"
+                           aria-hidden="true"></i>
                         <span>{{ $notasMensagem[$statusVal] ?? '' }}</span>
                     </div>
 
-                    {{-- Valor total --}}
+                    {{--
+                        Valor total — vem do registo de pagamento na BD ($pedido->pagamento->amount).
+                        Se o registo de pagamento não existir (situação anómala), mostra '—'
+                        em vez de um valor hardcoded errado.
+                        O controller deve fazer eager-load: Application::with('pagamento')
+                    --}}
                     <div class="valor-total">
                         <span class="valor-label">Total a pagar</span>
-                        <span class="valor-montante">{{ number_format($pedido->amount ?? 25000, 2, ',', '.') }} Kz</span>
+                        <span class="valor-montante">
+                            @if($valorPagamento !== null)
+                                {{ number_format($valorPagamento, 2, ',', '.') }} Kz
+                            @else
+                                <span style="color:#999; font-size:0.9em;">—</span>
+                            @endif
+                        </span>
                     </div>
 
                 </div>
@@ -204,22 +251,23 @@
                 <div class="document-actions">
                     @if($podeSubmeterComprovativo)
                         <button type="button" class="btn-acao btn-pagar" id="btn-abrir-modal">
-                            <i class="fas fa-upload"></i> Submeter Comprovativo
+                            <i class="fas fa-upload" aria-hidden="true"></i> Submeter Comprovativo
                         </button>
                     @endif
 
                     @if(in_array($statusVal, ['aprovado', 'documento_emitido']))
                         <a href="#" class="btn-acao btn-download">
-                            <i class="fas fa-download"></i> Baixar Documento
+                            <i class="fas fa-download" aria-hidden="true"></i> Baixar Documento
                         </a>
                     @endif
 
-                    <a href="{{ route('consulta.baixar-ficha-cobranca', $pedido->id) }}" class="btn-acao btn-download">
-                        <i class="fas fa-file-pdf"></i> Baixar Ficha de Cobrança
+                    <a href="{{ route('consulta.baixar-ficha-cobranca', $pedido->id) }}"
+                       class="btn-acao btn-download">
+                        <i class="fas fa-file-pdf" aria-hidden="true"></i> Baixar Ficha de Cobrança
                     </a>
 
                     <a href="{{ route('consulta.form') }}" class="btn-acao btn-voltar-inferior">
-                        <i class="fas fa-arrow-left"></i> Nova Consulta
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Nova Consulta
                     </a>
                 </div>
             </div>
@@ -229,14 +277,17 @@
 
 {{-- Modal: já enviou comprovativo anteriormente --}}
 @if($jaEnviouComprovativo)
-<div class="modal fade" id="modalSubstituir" tabindex="-1" aria-labelledby="modalSubstituirLabel" aria-hidden="true">
+<div class="modal fade" id="modalSubstituir" tabindex="-1"
+     aria-labelledby="modalSubstituirLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalSubstituirLabel">
-                    <i class="fas fa-exclamation-triangle text-warning"></i> Comprovativo já enviado
+                    <i class="fas fa-exclamation-triangle text-warning" aria-hidden="true"></i>
+                    Comprovativo já enviado
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
                 <p>Já submeteste um comprovativo de pagamento para este processo.</p>
@@ -244,10 +295,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Cancelar
+                    <i class="fas fa-times" aria-hidden="true"></i> Cancelar
                 </button>
                 <a href="{{ route('pedido.form-upload', $pedido->id) }}" class="btn btn-warning">
-                    <i class="fas fa-sync-alt"></i> Sim, substituir
+                    <i class="fas fa-sync-alt" aria-hidden="true"></i> Sim, substituir
                 </a>
             </div>
         </div>
@@ -257,19 +308,26 @@
 
 @push('scripts')
 <script>
+(function () {
+    'use strict';
+
     const btnAbrirModal = document.getElementById('btn-abrir-modal');
-    const jaEnviou = {{ $jaEnviouComprovativo ? 'true' : 'false' }};
+    const jaEnviou      = {{ $jaEnviouComprovativo ? 'true' : 'false' }};
 
     if (btnAbrirModal) {
         btnAbrirModal.addEventListener('click', function () {
             if (jaEnviou) {
-                const modal = new bootstrap.Modal(document.getElementById('modalSubstituir'));
-                modal.show();
+                const modalEl = document.getElementById('modalSubstituir');
+                if (modalEl && typeof bootstrap !== 'undefined') {
+                    new bootstrap.Modal(modalEl).show();
+                }
             } else {
-                window.location.href = "{{ route('pedido.form-upload', $pedido->id) }}";
+                window.location.href = '{{ route('pedido.form-upload', $pedido->id) }}';
             }
         });
     }
+
+}());
 </script>
 @endpush
 

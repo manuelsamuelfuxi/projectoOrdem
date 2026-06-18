@@ -15,17 +15,17 @@
     <div class="carousel-slides" id="carouselSlides">
 
         <div class="carousel-slide">
-            <img src="{{ Storage::url('carrossel/1.jpg') }}" alt="Slide 1" class="carousel-img-bg">
+            <img src="{{ Storage::url('carrossel/7.png') }}" alt="Slide 1" class="carousel-img-bg">
             <div class="carousel-overlay"></div>
         </div>
 
         <div class="carousel-slide">
-            <img src="{{ Storage::url('carrossel/3.jpg') }}" alt="Slide 2" class="carousel-img-bg">
+            <img src="{{ Storage::url('carrossel/8.png') }}" alt="Slide 2" class="carousel-img-bg">
             <div class="carousel-overlay"></div>
         </div>
 
         <div class="carousel-slide">
-            <img src="{{ Storage::url('carrossel/5.jpg') }}" alt="Slide 3" class="carousel-img-bg">
+            <img src="{{ Storage::url('carrossel/9.png') }}" alt="Slide 3" class="carousel-img-bg">
             <div class="carousel-overlay"></div>
         </div>
 
@@ -55,7 +55,6 @@
         </div>
 
         <div class="servicos-grid">
-
             <a href="{{ route('pedido.carteira.form') }}" class="servico-card">
                 <div class="servico-icone"><i class="fas fa-id-card"></i></div>
                 <div class="servico-titulo">Carteira Profissional</div>
@@ -64,26 +63,31 @@
             </a>
 
             <a href="{{ route('pedido.licenca.form') }}" class="servico-card">
-                <div class="servico-icone" style="background:linear-gradient(135deg,#c8922a,#e8b84b);"><i class="fas fa-certificate"></i></div>
+                <div class="servico-icone" style="background:linear-gradient(135deg,#c8922a,#e8b84b);">
+                    <i class="fas fa-certificate"></i>
+                </div>
                 <div class="servico-titulo">Licença Profissional</div>
                 <div class="servico-desc">Licença anual obrigatória para o exercício da actividade técnica de diagnóstico e terapêutica.</div>
                 <div class="servico-link">Solicitar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
             </a>
 
             <a href="{{ route('consulta.form') }}" class="servico-card">
-                <div class="servico-icone" style="background:linear-gradient(135deg,#0c4a8b,#1a6acc);"><i class="fas fa-search"></i></div>
+                <div class="servico-icone" style="background:linear-gradient(135deg,#0c4a8b,#1a6acc);">
+                    <i class="fas fa-search"></i>
+                </div>
                 <div class="servico-titulo">Consultar Estado</div>
                 <div class="servico-desc">Acompanhe o estado do seu pedido em tempo real, de forma simples e transparente.</div>
                 <div class="servico-link">Consultar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
             </a>
 
             <a href="{{ route('login') }}" class="servico-card">
-                <div class="servico-icone" style="background:linear-gradient(135deg,#15803d,#16a34a);"><i class="fas fa-user-check"></i></div>
+                <div class="servico-icone" style="background:linear-gradient(135deg,#15803d,#16a34a);">
+                    <i class="fas fa-user-check"></i>
+                </div>
                 <div class="servico-titulo">Área de Membro</div>
                 <div class="servico-desc">Aceda à sua área pessoal, gira os seus pedidos e documentos em qualquer lugar.</div>
                 <div class="servico-link">Entrar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
             </a>
-
         </div>
     </div>
 </section>
@@ -133,10 +137,11 @@
             @foreach($noticias as $noticia)
             <a href="{{ route('noticias.show', $noticia->uuid ?? $noticia->id) }}"
                class="noticia-fita-card">
-                @if($noticia->imagem_path)
-                    <img src="{{ Storage::url('noticias/' . basename($noticia->imagem_path)) }}"
-                         alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}"
-                         class="noticia-fita-img">
+                @if($noticia->hasImagem())
+                    <img src="{{ $noticia->imagem_url }}" 
+                         alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}" 
+                         class="noticia-fita-img" 
+                         loading="lazy">
                 @else
                     <div class="noticia-fita-img-placeholder">
                         <i class="fas fa-newspaper"></i>
@@ -145,10 +150,10 @@
                 <div class="noticia-fita-corpo">
                     <div class="noticia-fita-data">
                         <i class="fas fa-calendar-alt"></i>
-                        {{ $noticia->publicado_em?->format('d M Y') ?? '—' }}
+                        {{ $noticia->data_publicacao_amigavel }}
                     </div>
-                    <div class="noticia-fita-titulo">{{ $noticia->titulo }}</div>
-                    <div class="noticia-fita-excerto">{{ Str::limit(strip_tags($noticia->conteudo), 90) }}</div>
+                    <div class="noticia-fita-titulo">{{ $noticia->titulo_limitado }}</div>
+                    <div class="noticia-fita-excerto">{{ $noticia->resumo }}</div>
                     <div class="noticia-fita-ler">Ler mais <i class="fas fa-arrow-right" style="font-size:10px;"></i></div>
                 </div>
             </a>
@@ -159,10 +164,11 @@
                 @foreach($noticias as $noticia)
                 <a href="{{ route('noticias.show', $noticia->uuid ?? $noticia->id) }}"
                    class="noticia-fita-card">
-                    @if($noticia->imagem_path)
-                        <img src="{{ Storage::url('noticias/' . basename($noticia->imagem_path)) }}"
-                             alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}"
-                             class="noticia-fita-img">
+                    @if($noticia->hasImagem())
+                        <img src="{{ $noticia->imagem_url }}" 
+                             alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}" 
+                             class="noticia-fita-img"
+                             loading="lazy">
                     @else
                         <div class="noticia-fita-img-placeholder">
                             <i class="fas fa-newspaper"></i>
@@ -171,10 +177,10 @@
                     <div class="noticia-fita-corpo">
                         <div class="noticia-fita-data">
                             <i class="fas fa-calendar-alt"></i>
-                            {{ $noticia->publicado_em?->format('d M Y') ?? '—' }}
+                            {{ $noticia->data_publicacao_amigavel }}
                         </div>
-                        <div class="noticia-fita-titulo">{{ $noticia->titulo }}</div>
-                        <div class="noticia-fita-excerto">{{ Str::limit(strip_tags($noticia->conteudo), 90) }}</div>
+                        <div class="noticia-fita-titulo">{{ $noticia->titulo_limitado }}</div>
+                        <div class="noticia-fita-excerto">{{ $noticia->resumo }}</div>
                         <div class="noticia-fita-ler">Ler mais <i class="fas fa-arrow-right" style="font-size:10px;"></i></div>
                     </div>
                 </a>
@@ -210,10 +216,11 @@
             @php $primeira = $noticiasEmDestaque->first(); @endphp
 
             <a href="{{ route('noticias.show', $primeira->uuid ?? $primeira->id) }}" class="card-destaque-grande">
-                @if($primeira->imagem_path)
-                    <img src="{{ Storage::url('noticias/' . basename($primeira->imagem_path)) }}"
+                @if($primeira->hasImagem())
+                    <img src="{{ $primeira->imagem_url }}"
                          alt="{{ $primeira->texto_alternativo ?? $primeira->titulo }}"
-                         class="card-img">
+                         class="card-img"
+                         loading="lazy">
                 @else
                     <div class="card-img-placeholder"><i class="fas fa-newspaper"></i></div>
                 @endif
@@ -222,7 +229,7 @@
                     <div class="card-titulo-grande">{{ $primeira->titulo }}</div>
                     <div class="card-excerto">{{ Str::limit(strip_tags($primeira->conteudo), 160) }}</div>
                     <div class="card-meta">
-                        <span><i class="fas fa-calendar-alt"></i> {{ $primeira->publicado_em?->format('d/m/Y') ?? '—' }}</span>
+                        <span><i class="fas fa-calendar-alt"></i> {{ $primeira->data_publicacao_formatada }}</span>
                         <span><i class="fas fa-eye"></i> {{ number_format($primeira->visualizacoes ?? 0) }} visualizações</span>
                     </div>
                 </div>
@@ -230,20 +237,21 @@
 
             @foreach($noticiasEmDestaque->skip(1) as $noticia)
             <a href="{{ route('noticias.show', $noticia->uuid ?? $noticia->id) }}" class="card-destaque-pequeno">
-                @if($noticia->imagem_path)
-                    <img src="{{ Storage::url('noticias/' . basename($noticia->imagem_path)) }}"
+                @if($noticia->hasImagem())
+                    <img src="{{ $noticia->imagem_url }}"
                          alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}"
-                         class="card-img">
+                         class="card-img"
+                         loading="lazy">
                 @else
                     <div class="card-img-placeholder"><i class="fas fa-newspaper"></i></div>
                 @endif
                 <div class="card-corpo">
-                    <div class="card-titulo-pequeno">{{ $noticia->titulo }}</div>
+                    <div class="card-titulo-pequeno">{{ $noticia->titulo_limitado }}</div>
                     <div class="card-excerto" style="font-size:12.5px; margin-bottom:8px;">
                         {{ Str::limit(strip_tags($noticia->conteudo), 80) }}
                     </div>
                     <div class="card-meta">
-                        <span><i class="fas fa-calendar-alt"></i> {{ $noticia->publicado_em?->format('d/m/Y') ?? '—' }}</span>
+                        <span><i class="fas fa-calendar-alt"></i> {{ $noticia->data_publicacao_formatada }}</span>
                     </div>
                 </div>
             </a>
@@ -274,13 +282,13 @@
 @push("scripts")
 @php
  $imagensCarrossel = [
-    Storage::url('carrossel/1.jpg'),
-    Storage::url('carrossel/2.jpg'),
-    Storage::url('carrossel/3.jpg'),
-    Storage::url('carrossel/4.jpg'),
-    Storage::url('carrossel/5.jpg'),
-    Storage::url('carrossel/6.jpg'),
-    Storage::url('carrossel/7.jpg'),
+    asset('storage/carrossel/1.jpg'),
+    asset('storage/carrossel/2.jpg'),
+    asset('storage/carrossel/3.jpg'),
+    asset('storage/carrossel/4.jpg'),
+    asset('storage/carrossel/5.jpg'),
+    asset('storage/carrossel/6.jpg'),
+    asset('storage/carrossel/7.jpg'),
 ];
 @endphp
 <script>
@@ -303,11 +311,12 @@
     }
 
     function moveCarousel(dir) {
+        const slides = document.querySelectorAll('.carousel-slide');
         if (dir === 1) {
             const sai = slideAtual;
             slideAtual = (slideAtual + 1) % totalSlides;
             imagemPorSlot[sai] = (imagemPorSlot[sai] + totalSlides) % imagensCarrossel.length;
-            const imgEl = document.querySelectorAll('.carousel-img-bg')[sai];
+            const imgEl = slides[sai]?.querySelector('.carousel-img-bg');
             if (imgEl) imgEl.src = imagensCarrossel[imagemPorSlot[sai]];
         } else {
             slideAtual = (slideAtual - 1 + totalSlides) % totalSlides;

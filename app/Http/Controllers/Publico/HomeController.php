@@ -9,15 +9,21 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Busca as últimas 6 notícias publicadas (para a fita horizontal)
         $noticias = Noticia::publicados()
-            ->orderBy("publicado_em", "desc")
-            ->paginate(6);
+            ->latest('publicado_em')  // Mais elegante que orderBy
+            ->limit(6)                // Apenas 6 para a fita
+            ->get();
 
+        // Busca notícias em destaque (até 3)
         $noticiasEmDestaque = Noticia::destacados()
-            ->orderBy("publicado_em", "desc")
+            ->latest('publicado_em')
             ->limit(3)
             ->get();
 
-        return view("publico.home", compact("noticias", "noticiasEmDestaque"));
+        // Última notícia para o carrossel (a primeira da lista)
+        $ultimaNoticia = $noticias->first();
+
+        return view("publico.home", compact("noticias", "noticiasEmDestaque", "ultimaNoticia"));
     }
 }
