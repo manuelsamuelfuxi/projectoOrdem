@@ -9,6 +9,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // SEGURANÇA: Só roda se a tabela 'applications' já existir.
+        // Se a tabela não existe (ex: nova BD), não faz nada.
+        if (!Schema::hasTable('applications')) {
+            return;
+        }
+
         Schema::table('applications', function (Blueprint $table) {
             $existentes = array_column(DB::select('DESCRIBE applications'), 'Field');
 
@@ -47,6 +53,12 @@ return new class extends Migration
 
     public function down(): void
     {
+        // O mesmo 'down' original, que é inteligente o suficiente,
+        // mas vamos adicionar a verificação extra aqui também para ser consistente.
+        if (!Schema::hasTable('applications')) {
+            return;
+        }
+
         Schema::table('applications', function (Blueprint $table) {
             $existentes = array_column(DB::select('DESCRIBE applications'), 'Field');
 
