@@ -15,17 +15,17 @@
     <div class="carousel-slides" id="carouselSlides">
 
         <div class="carousel-slide">
-            <img src="{{ Storage::url('carrossel/7.png') }}" alt="Slide 1" class="carousel-img-bg">
+            <img src="{{ asset('images/carrossel/7.png') }}" alt="Slide 1" class="carousel-img-bg">
             <div class="carousel-overlay"></div>
         </div>
 
         <div class="carousel-slide">
-            <img src="{{ Storage::url('carrossel/8.png') }}" alt="Slide 2" class="carousel-img-bg">
+            <img src="{{ asset('images/carrossel/8.png') }}" alt="Slide 2" class="carousel-img-bg">
             <div class="carousel-overlay"></div>
         </div>
 
         <div class="carousel-slide">
-            <img src="{{ Storage::url('carrossel/9.png') }}" alt="Slide 3" class="carousel-img-bg">
+            <img src="{{ asset('images/carrossel/9.png') }}" alt="Slide 3" class="carousel-img-bg">
             <div class="carousel-overlay"></div>
         </div>
 
@@ -138,9 +138,9 @@
             <a href="{{ route('noticias.show', $noticia->uuid ?? $noticia->id) }}"
                class="noticia-fita-card">
                 @if($noticia->hasImagem())
-                    <img src="{{ $noticia->imagem_url }}" 
-                         alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}" 
-                         class="noticia-fita-img" 
+                    <img src="{{ $noticia->imagem_url }}"
+                         alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}"
+                         class="noticia-fita-img"
                          loading="lazy">
                 @else
                     <div class="noticia-fita-img-placeholder">
@@ -165,8 +165,8 @@
                 <a href="{{ route('noticias.show', $noticia->uuid ?? $noticia->id) }}"
                    class="noticia-fita-card">
                     @if($noticia->hasImagem())
-                        <img src="{{ $noticia->imagem_url }}" 
-                             alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}" 
+                        <img src="{{ $noticia->imagem_url }}"
+                             alt="{{ $noticia->texto_alternativo ?? $noticia->titulo }}"
                              class="noticia-fita-img"
                              loading="lazy">
                     @else
@@ -281,14 +281,14 @@
 
 @push("scripts")
 @php
- $imagensCarrossel = [
-    asset('storage/carrossel/1.jpg'),
-    asset('storage/carrossel/2.jpg'),
-    asset('storage/carrossel/3.jpg'),
-    asset('storage/carrossel/4.jpg'),
-    asset('storage/carrossel/5.jpg'),
-    asset('storage/carrossel/6.jpg'),
-    asset('storage/carrossel/7.jpg'),
+$imagensCarrossel = [
+    asset('images/carrossel/1.jpg'),
+    asset('images/carrossel/2.jpg'),
+    asset('images/carrossel/3.png'),
+    asset('images/carrossel/4.jpg'),
+    asset('images/carrossel/5.jpg'),
+    asset('images/carrossel/6.jpg'),
+    asset('images/carrossel/7.png'),
 ];
 @endphp
 <script>
