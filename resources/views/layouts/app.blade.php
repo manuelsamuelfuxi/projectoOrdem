@@ -530,9 +530,6 @@
 {{-- DRAWER LATERAL ESQUERDO --}}
 <div class="nav-drawer" id="navDrawer">
     <div class="nav-drawer-header">
-        <div class="nav-drawer-logo">
-            <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA">
-        </div>
         <button class="nav-drawer-fechar" onclick="fecharDrawer()">
             <i class="fas fa-times"></i>
         </button>
