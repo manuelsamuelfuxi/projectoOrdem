@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield("title", "ORDEPDITA — Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola")</title>
+    <title>@yield("title", "Associação do Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola")</title>
 
-    <!-- Vite Directives -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- Bootstrap e Fonts existentes -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -69,7 +67,6 @@
         .top-bar-info span { display: flex; align-items: center; gap: 6px; }
         .top-bar-info i { color: var(--ouro); font-size: 11px; }
 
-        /* Botão ACESSO com gradiente */
         .btn-acesso {
             display: inline-flex;
             align-items: center;
@@ -90,7 +87,6 @@
 
         .btn-acesso:hover { opacity: 0.88; transform: translateY(-1px); color: #07193a; }
 
-        /* Dropdown do utilizador autenticado */
         .top-user-btn {
             display: inline-flex;
             align-items: center;
@@ -108,10 +104,7 @@
 
         .top-user-btn:hover { background: rgba(255,255,255,0.14); }
 
-        .top-dropdown {
-            position: relative;
-            display: inline-block;
-        }
+        .top-dropdown { position: relative; display: inline-block; }
 
         .top-dropdown-menu {
             display: none;
@@ -187,10 +180,7 @@
             flex-shrink: 0;
         }
 
-        .pub-nav-logo img {
-            width: 100%; height: 100%;
-            object-fit: contain;
-        }
+        .pub-nav-logo img { width: 100%; height: 100%; object-fit: contain; }
 
         .pub-nav-nome {
             font-family: 'Playfair Display', serif;
@@ -237,10 +227,7 @@
         .pub-nav-links > li > a.ativo,
         .pub-nav-links > li > .nav-drop-btn:hover { background: rgba(255,255,255,0.10); color: #fff; }
 
-        /* Dropdown do menu Pedidos */
-        .nav-drop {
-            position: relative;
-        }
+        .nav-drop { position: relative; }
 
         .nav-drop-menu {
             display: none;
@@ -274,6 +261,195 @@
         .nav-drop-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 4px 0; }
 
         /* ══════════════════════════════════════════
+           MENU HAMBÚRGUER
+        ══════════════════════════════════════════ */
+        .nav-hamburguer {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.10);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            gap: 5px;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+
+        .nav-hamburguer:hover { background: rgba(255,255,255,0.18); }
+
+        .nav-hamburguer span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        /* Animação X quando aberto */
+        .nav-hamburguer.aberto span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .nav-hamburguer.aberto span:nth-child(2) { opacity: 0; }
+        .nav-hamburguer.aberto span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Overlay escuro */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 498;
+        }
+
+        .nav-overlay.visivel { display: block; }
+
+        /* Drawer lateral */
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: #07193a;
+            z-index: 499;
+            transform: translateX(-100%);
+            transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .nav-drawer.aberto { transform: translateX(0); }
+
+        .nav-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+
+        .nav-drawer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-drawer-brand img {
+            width: 38px; height: 38px;
+            border-radius: 6px;
+            object-fit: contain;
+        }
+
+        .nav-drawer-brand-nome {
+            font-family: 'Playfair Display', serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .nav-drawer-fechar {
+            width: 34px; height: 34px;
+            border-radius: 7px;
+            border: none;
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.70);
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .nav-drawer-fechar:hover { background: rgba(255,255,255,0.16); color: #fff; }
+
+        .nav-drawer-links {
+            list-style: none;
+            padding: 12px 0;
+            flex: 1;
+        }
+
+        .nav-drawer-links li a,
+        .nav-drawer-links li button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 24px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.78);
+            text-decoration: none;
+            background: none;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .nav-drawer-links li a:hover,
+        .nav-drawer-links li button:hover,
+        .nav-drawer-links li a.ativo { background: rgba(255,255,255,0.07); color: #fff; }
+
+        .nav-drawer-links li a i,
+        .nav-drawer-links li button i { color: var(--ouro); width: 16px; }
+
+        .nav-drawer-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 8px 0; }
+
+        /* Sub-menu Pedidos no drawer */
+        .nav-drawer-submenu {
+            list-style: none;
+            background: rgba(0,0,0,0.20);
+            display: none;
+        }
+
+        .nav-drawer-submenu.aberto { display: block; }
+
+        .nav-drawer-submenu li a {
+            padding: 11px 24px 11px 52px;
+            font-size: 13.5px;
+        }
+
+        .nav-drawer-toggle-icon {
+            margin-left: auto;
+            font-size: 11px;
+            transition: transform 0.25s;
+        }
+
+        .nav-drawer-toggle-icon.aberto { transform: rotate(180deg); }
+
+        /* Rodapé do drawer */
+        .nav-drawer-footer {
+            padding: 16px 20px;
+            border-top: 0.5px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+
+        .nav-drawer-footer a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: linear-gradient(90deg, #c8922a, #e8b84b);
+            color: #07193a;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .nav-drawer-footer a:hover { opacity: 0.88; }
+
+        /* ══════════════════════════════════════════
            ALERTAS FLASH
         ══════════════════════════════════════════ */
         .flash-wrap {
@@ -298,13 +474,9 @@
         .flash-alert-danger  { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
 
         /* ══════════════════════════════════════════
-           UTILITÁRIOS PÚBLICOS (usados nas views)
+           UTILITÁRIOS PÚBLICOS
         ══════════════════════════════════════════ */
-        .secao {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 64px 24px;
-        }
+        .secao { max-width: 1180px; margin: 0 auto; padding: 64px 24px; }
 
         .secao-topo {
             display: flex;
@@ -352,7 +524,6 @@
             border-bottom: 0.5px solid var(--cinza-b);
         }
 
-        /* Cards de destaque */
         .grid-destaques {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -458,12 +629,7 @@
 
         .card-meta i { color: var(--ouro); }
 
-        /* Grid notícias */
-        .grid-noticias {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
+        .grid-noticias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
         .card-noticia {
             border-radius: 12px;
@@ -488,7 +654,6 @@
         }
         .card-noticia .card-corpo { padding: 18px 20px; display: flex; flex-direction: column; flex: 1; }
 
-        /* Paginação */
         .paginacao {
             display: flex;
             align-items: center;
@@ -514,7 +679,6 @@
         .pag-btn.ativo { background: var(--azul); color: #fff; border-color: var(--azul); }
         .pag-btn.desativo { color: #c8d3e8; pointer-events: none; }
 
-        /* Banner CTA */
         .banner-inst {
             background: linear-gradient(135deg, var(--azul) 0%, var(--azul-med) 100%);
             padding: 56px 24px;
@@ -625,12 +789,7 @@
             color: rgba(255,255,255,0.60);
         }
 
-        .footer-contacto-item i {
-            color: var(--ouro);
-            margin-top: 2px;
-            flex-shrink: 0;
-            width: 14px;
-        }
+        .footer-contacto-item i { color: var(--ouro); margin-top: 2px; flex-shrink: 0; width: 14px; }
 
         .footer-social a {
             display: inline-flex;
@@ -660,7 +819,6 @@
         }
 
         .footer-bottom p { font-size: 12.5px; color: rgba(255,255,255,0.35); }
-
         .footer-bottom-links { display: flex; gap: 20px; }
 
         .footer-bottom-links a {
@@ -683,12 +841,18 @@
             .top-bar-info { display: none; }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .pub-nav-links { display: none; }
+            .nav-hamburguer { display: flex; }
+        }
+
+        @media (max-width: 640px) {
             .grid-noticias { grid-template-columns: 1fr; }
             .pub-footer-inner { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; text-align: center; }
             .footer-bottom-links { justify-content: center; flex-wrap: wrap; }
+            .pub-nav-nome { font-size: 14px; }
+            .pub-nav-sub { display: none; }
         }
     </style>
 
@@ -697,13 +861,117 @@
 <body>
 
 {{-- ══════════════════════════════════════════ --}}
+{{-- OVERLAY e DRAWER MÓVEL                     --}}
+{{-- ══════════════════════════════════════════ --}}
+<div class="nav-overlay" id="navOverlay" onclick="fecharDrawer()"></div>
+
+<div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer-header">
+        <a href="{{ route('home') }}" class="nav-drawer-brand" onclick="fecharDrawer()">
+            <img src="{{ asset('images/logo.png') }}" alt="Logotipo ORDEPDITA">
+            <span class="nav-drawer-brand-nome">AATDSPA</span>
+        </a>
+        <button class="nav-drawer-fechar" onclick="fecharDrawer()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <ul class="nav-drawer-links">
+        <li>
+            <a href="{{ route('home') }}"
+               class="{{ request()->routeIs('home') ? 'ativo' : '' }}"
+               onclick="fecharDrawer()">
+                <i class="fas fa-home"></i> Início
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('noticias.index') }}"
+               class="{{ request()->routeIs('noticias.*') ? 'ativo' : '' }}"
+               onclick="fecharDrawer()">
+                <i class="fas fa-newspaper"></i> Notícias
+            </a>
+        </li>
+        <li>
+            <button onclick="toggleSubmenuDrawer(this)">
+                <i class="fas fa-file-alt"></i> Pedidos
+                <i class="fas fa-chevron-down nav-drawer-toggle-icon"></i>
+            </button>
+            <ul class="nav-drawer-submenu" id="drawerSubmenuPedidos">
+                <li>
+                    <a href="{{ route('pedido.carteira.form') }}" onclick="fecharDrawer()">
+                        <i class="fas fa-id-card"></i> Carteira Profissional
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('pedido.licenca.form') }}" onclick="fecharDrawer()">
+                        <i class="fas fa-certificate"></i> Licença Profissional
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('consulta.form') }}" onclick="fecharDrawer()">
+                        <i class="fas fa-search"></i> Consultar Estado
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ route('sobre') }}"
+               class="{{ request()->routeIs('sobre') ? 'ativo' : '' }}"
+               onclick="fecharDrawer()">
+                <i class="fas fa-info-circle"></i> Sobre
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('contactos') }}"
+               class="{{ request()->routeIs('contactos') ? 'ativo' : '' }}"
+               onclick="fecharDrawer()">
+                <i class="fas fa-envelope"></i> Contactos
+            </a>
+        </li>
+
+        <div class="nav-drawer-divider"></div>
+
+        @auth
+            @if(auth()->user()->isSuperAdmin())
+                <li>
+                    <a href="{{ route('super-admin.dashboard') }}" onclick="fecharDrawer()">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard Super Admin
+                    </a>
+                </li>
+            @elseif(auth()->user()->isAdmin())
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" onclick="fecharDrawer()">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard Admin
+                    </a>
+                </li>
+            @endif
+        @endauth
+    </ul>
+
+    <div class="nav-drawer-footer">
+        @auth
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                @csrf
+                <button type="submit" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px;background:linear-gradient(90deg,#c8922a,#e8b84b);color:#07193a;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;border:none;border-radius:8px;cursor:pointer;">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}">
+                <i class="fas fa-lock"></i> ACESSO À PLATAFORMA
+            </a>
+        @endauth
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════ --}}
 {{-- TOP BAR                                    --}}
 {{-- ══════════════════════════════════════════ --}}
 <div class="top-bar">
     <div class="top-bar-inner">
         <div class="top-bar-info">
-            <span><i class="fas fa-phone"></i> +244 900 000 000</span>
-            <span><i class="fas fa-envelope"></i> geral@ordepdita.ao</span>
+            <span><i class="fas fa-phone"></i> +244 948 607 983</span>
+            <span><i class="fas fa-envelope"></i> www.aatdspa.ao@gmail.com</span>
             <span><i class="fas fa-clock"></i> Seg–Sex, 08h–17h</span>
         </div>
 
@@ -746,26 +1014,32 @@
 {{-- ══════════════════════════════════════════ --}}
 <nav class="pub-nav">
     <div class="pub-nav-inner">
+
+        {{-- Botão hambúrguer (esquerda em mobile) --}}
+        <button class="nav-hamburguer" id="navHamburguer" onclick="abrirDrawer()" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
         <a href="{{ route('home') }}" class="pub-nav-brand">
             <div class="pub-nav-logo">
                 <img src="{{ asset('images/logo.jpg') }}" alt="Logotipo ORDEPDITA">
             </div>
             <div>
-                <div class="pub-nav-nome">ORDEPDITA</div>
-                <div class="pub-nav-sub">Ordem dos Técnicos</div>
+                <div class="pub-nav-nome">AATDSPA</div>
+                <div class="pub-nav-sub">Associação da Ordem dos Técnicos</div>
             </div>
         </a>
 
         <ul class="pub-nav-links">
             <li>
-                <a href="{{ route('home') }}"
-                   class="{{ request()->routeIs('home') ? 'ativo' : '' }}">
+                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'ativo' : '' }}">
                     <i class="fas fa-home"></i> Início
                 </a>
             </li>
             <li>
-                <a href="{{ route('noticias.index') }}"
-                   class="{{ request()->routeIs('noticias.*') ? 'ativo' : '' }}">
+                <a href="{{ route('noticias.index') }}" class="{{ request()->routeIs('noticias.*') ? 'ativo' : '' }}">
                     <i class="fas fa-newspaper"></i> Notícias
                 </a>
             </li>
@@ -775,7 +1049,7 @@
                     <i class="fas fa-chevron-down" style="font-size:10px; opacity:0.6;"></i>
                 </button>
                 <div class="nav-drop-menu">
-                    <a href="{{ route('pedido.carteira.form') }}">
+                    <a href="#">
                         <i class="fas fa-id-card"></i> Carteira Profissional
                     </a>
                     <a href="{{ route('pedido.licenca.form') }}">
@@ -788,14 +1062,12 @@
                 </div>
             </li>
             <li>
-                <a href="{{ route('sobre') }}"
-                   class="{{ request()->routeIs('sobre') ? 'ativo' : '' }}">
+                <a href="{{ route('sobre') }}" class="{{ request()->routeIs('sobre') ? 'ativo' : '' }}">
                     <i class="fas fa-info-circle"></i> Sobre
                 </a>
             </li>
             <li>
-                <a href="{{ route('contactos') }}"
-                   class="{{ request()->routeIs('contactos') ? 'ativo' : '' }}">
+                <a href="{{ route('contactos') }}" class="{{ request()->routeIs('contactos') ? 'ativo' : '' }}">
                     <i class="fas fa-envelope"></i> Contactos
                 </a>
             </li>
@@ -840,13 +1112,13 @@
         <div class="footer-marca">
             <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width:44px; height:44px; border-radius:8px; overflow:hidden; flex-shrink:0;">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="Logotipo ORDEPDITA"
+                    <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA"
                          style="width:100%; height:100%; object-fit:contain;">
                 </div>
                 <div style="font-family:'Playfair Display',serif; font-size:15px;
-                            font-weight:700; color:#fff; line-height:1.2;">ORDEPDITA</div>
+                            font-weight:700; color:#fff; line-height:1.2;">AATDSPA</div>
             </div>
-            <p>Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola — regulação, valorização e defesa da classe técnica nacional.</p>
+            <p>Associação da Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola — regulação, valorização e defesa da classe técnica nacional.</p>
             <div class="footer-social" style="margin-top:16px;">
                 <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
@@ -869,7 +1141,7 @@
         <div>
             <div class="footer-titulo">Serviços</div>
             <ul class="footer-links">
-                <li><a href="{{ route('pedido.carteira.form') }}"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Carteira Profissional</a></li>
+                <li><a href="#"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Carteira Profissional</a></li>
                 <li><a href="{{ route('pedido.licenca.form') }}"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Licença Profissional</a></li>
                 <li><a href="{{ route('consulta.form') }}"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Consultar Estado</a></li>
                 <li><a href="{{ route('login') }}"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Área de Membro</a></li>
@@ -885,11 +1157,11 @@
                 </div>
                 <div class="footer-contacto-item">
                     <i class="fas fa-phone"></i>
-                    <span>+244 900 000 000</span>
+                    <span>+244 948 607 983</span>
                 </div>
                 <div class="footer-contacto-item">
                     <i class="fas fa-envelope"></i>
-                    <span>geral@ordepdita.ao</span>
+                    <span>www.aatdspa.ao@gmail.com</span>
                 </div>
                 <div class="footer-contacto-item">
                     <i class="fas fa-clock"></i>
@@ -901,7 +1173,7 @@
     </div>
 
     <div class="pub-footer-inner footer-bottom">
-        <p>© {{ date('Y') }} ORDEPDITA — Todos os direitos reservados.</p>
+        <p>© {{ date('Y') }} Associação da ORDEPDITA — Todos os direitos reservados.</p>
         <div class="footer-bottom-links">
             <a href="#">Política de Privacidade</a>
             <a href="#">Termos de Uso</a>
@@ -911,6 +1183,34 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function abrirDrawer() {
+        document.getElementById('navDrawer').classList.add('aberto');
+        document.getElementById('navOverlay').classList.add('visivel');
+        document.getElementById('navHamburguer').classList.add('aberto');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharDrawer() {
+        document.getElementById('navDrawer').classList.remove('aberto');
+        document.getElementById('navOverlay').classList.remove('visivel');
+        document.getElementById('navHamburguer').classList.remove('aberto');
+        document.body.style.overflow = '';
+    }
+
+    function toggleSubmenuDrawer(btn) {
+        const submenu = btn.nextElementSibling;
+        const icon = btn.querySelector('.nav-drawer-toggle-icon');
+        const aberto = submenu.classList.toggle('aberto');
+        icon.classList.toggle('aberto', aberto);
+    }
+
+    // Fechar com tecla Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') fecharDrawer();
+    });
+</script>
 
 @stack("scripts")
 </body>
