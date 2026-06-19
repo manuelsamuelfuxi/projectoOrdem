@@ -8,7 +8,8 @@ export default defineConfig({
                 'resources/css/app.css', 
                 'resources/js/app.js',
                 'resources/css/consulta/status.css',
-                'resources/css/consulta/enviarcomprovativo.css' // <-- Novo arquivo aqui
+                'resources/css/consulta/enviarcomprovativo.css',
+                'resources/css/publico/home.css', // <-- adicionar
             ],
             refresh: true,
         }),
