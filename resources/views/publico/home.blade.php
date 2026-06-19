@@ -1,6 +1,6 @@
 @extends("layouts.app")
 
-@section("title", "ORDEPDITA — Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola")
+@section("title", "Associação do Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola")
 
 @section("content")
 

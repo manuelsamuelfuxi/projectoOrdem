@@ -207,8 +207,8 @@
         <div class="login-card">
 
             <div class="login-header">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Logotipo ORDEPDITA" class="login-logo">
-                <h1>ORDEPDITA</h1>
+                <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA" class="login-logo">
+                <h1>AATDSPA</h1>
                 <p>Área reservada — acesso restrito</p>
             </div>
 
