@@ -7,9 +7,15 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/js/app.js',
+                'resources/css/publico/home.css',
+                'resources/css/consulta/estado.css',
+                'resources/css/consulta/consulta-form.css',
                 'resources/css/consulta/status.css',
                 'resources/css/consulta/enviarcomprovativo.css',
-                'resources/css/publico/home.css', // <-- adicionar
+                'resources/css/pedidos/etapa1-dados-pessoais.css',
+                'resources/css/pedidos/etapa2-dados-profissionais.css',
+                'resources/css/pedidos/etapa3-upload-documentos.css',
+                'resources/css/pedidos/etapa4-ficha-cobranca.css',
             ],
             refresh: true,
         }),
