@@ -5,8 +5,11 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Migrações (opcional — comenta se não quiseres correr automaticamente)
+# Migrações
 php artisan migrate --force
+
+# Link simbólico para o storage
+php artisan storage:link
 
 # Limpar e recriar cache
 php artisan config:cache
