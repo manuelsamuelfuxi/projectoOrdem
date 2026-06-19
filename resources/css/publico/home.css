@@ -140,14 +140,16 @@
          max-width: 1180px; 
          margin: 0 auto;
          }
-    .servicos-grid { 
+        .servicos-grid { 
         display: grid; 
-        grid-template-columns: repeat(4, 1fr); 
+        /* Altera para criar apenas 3 colunas e define um tamanho máximo para os cartões */
+        grid-template-columns: repeat(3, minmax(250px, 320px)); 
         gap: 20px; 
         margin-top: 40px;
-        margin: 40px auto 0 auto;
+        /* Centraliza a grelha de 3 colunas dentro dos 1180px do elemento pai */
         justify-content: center;
     }
+
 
     .servico-card {
         background: var(--branco); 
