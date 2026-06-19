@@ -87,12 +87,29 @@
 
         .btn-acesso:hover { opacity: 0.88; transform: translateY(-1px); color: #07193a; }
 
+        /* Versão compacta só com cadeado para mobile */
+        .btn-acesso-icon {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #c8922a, #2563eb);
+            color: #07193a;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-acesso-icon:hover { opacity: 0.85; color: #07193a; }
+
         .top-user-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 6px 16px;
-            border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             color: rgba(255,255,255,0.85);
@@ -113,7 +130,6 @@
             top: calc(100% + 8px);
             background: #07193a;
             border: 0.5px solid rgba(255,255,255,0.12);
-            border-radius: 10px;
             min-width: 200px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
             overflow: hidden;
@@ -175,7 +191,6 @@
 
         .pub-nav-logo {
             width: 48px; height: 48px;
-            border-radius: 8px;
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -211,7 +226,6 @@
             align-items: center;
             gap: 5px;
             padding: 8px 14px;
-            border-radius: 7px;
             font-size: 13.5px;
             font-weight: 500;
             color: rgba(255,255,255,0.78);
@@ -236,7 +250,6 @@
             left: 0;
             background: #0f2a5e;
             border: 0.5px solid rgba(255,255,255,0.12);
-            border-radius: 10px;
             min-width: 210px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.35);
             overflow: hidden;
@@ -272,7 +285,6 @@
             height: 42px;
             background: rgba(255,255,255,0.10);
             border: none;
-            border-radius: 8px;
             cursor: pointer;
             gap: 5px;
             transition: background 0.15s;
@@ -286,11 +298,10 @@
             width: 22px;
             height: 2px;
             background: #fff;
-            border-radius: 2px;
             transition: transform 0.3s, opacity 0.3s;
         }
 
-        /* Animação X quando aberto */
+        /* Quando aberto: vira X */
         .nav-hamburguer.aberto span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .nav-hamburguer.aberto span:nth-child(2) { opacity: 0; }
         .nav-hamburguer.aberto span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -306,72 +317,28 @@
 
         .nav-overlay.visivel { display: block; }
 
-        /* Drawer lateral */
+        /* Drawer — começa logo abaixo da navbar (68px) */
         .nav-drawer {
             position: fixed;
-            top: 0;
+            top: 68px; /* altura exacta da navbar */
             left: 0;
-            width: 280px;
-            height: 100vh;
+            width: 100%;
+            max-height: calc(100vh - 68px);
             background: #07193a;
             z-index: 499;
-            transform: translateX(-100%);
+            transform: translateY(-110%);
             transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
 
-        .nav-drawer.aberto { transform: translateX(0); }
-
-        .nav-drawer-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 20px;
-            border-bottom: 0.5px solid rgba(255,255,255,0.08);
-            flex-shrink: 0;
-        }
-
-        .nav-drawer-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-
-        .nav-drawer-brand img {
-            width: 38px; height: 38px;
-            border-radius: 6px;
-            object-fit: contain;
-        }
-
-        .nav-drawer-brand-nome {
-            font-family: 'Playfair Display', serif;
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .nav-drawer-fechar {
-            width: 34px; height: 34px;
-            border-radius: 7px;
-            border: none;
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.70);
-            font-size: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.15s;
-        }
-
-        .nav-drawer-fechar:hover { background: rgba(255,255,255,0.16); color: #fff; }
+        .nav-drawer.aberto { transform: translateY(0); }
 
         .nav-drawer-links {
             list-style: none;
-            padding: 12px 0;
+            padding: 8px 0;
             flex: 1;
         }
 
@@ -379,75 +346,56 @@
         .nav-drawer-links li button {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 13px 24px;
-            font-size: 14.5px;
+            gap: 14px;
+            padding: 15px 28px;
+            font-size: 15px;
             font-weight: 500;
-            color: rgba(255,255,255,0.78);
+            color: rgba(255,255,255,0.82);
             text-decoration: none;
             background: none;
             border: none;
             width: 100%;
             cursor: pointer;
             transition: background 0.15s, color 0.15s;
+            border-bottom: 0.5px solid rgba(255,255,255,0.05);
         }
 
         .nav-drawer-links li a:hover,
         .nav-drawer-links li button:hover,
-        .nav-drawer-links li a.ativo { background: rgba(255,255,255,0.07); color: #fff; }
+        .nav-drawer-links li a.ativo {
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+        }
 
         .nav-drawer-links li a i,
-        .nav-drawer-links li button i { color: var(--ouro); width: 16px; }
+        .nav-drawer-links li button i { color: var(--ouro); width: 18px; }
 
-        .nav-drawer-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 8px 0; }
+        .nav-drawer-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 4px 0; }
 
         /* Sub-menu Pedidos no drawer */
         .nav-drawer-submenu {
             list-style: none;
-            background: rgba(0,0,0,0.20);
+            background: rgba(0,0,0,0.25);
             display: none;
         }
 
         .nav-drawer-submenu.aberto { display: block; }
 
         .nav-drawer-submenu li a {
-            padding: 11px 24px 11px 52px;
-            font-size: 13.5px;
+            padding: 12px 28px 12px 60px;
+            font-size: 14px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.04);
         }
 
         .nav-drawer-toggle-icon {
             margin-left: auto;
             font-size: 11px;
             transition: transform 0.25s;
+            color: rgba(255,255,255,0.45) !important;
+            width: auto !important;
         }
 
         .nav-drawer-toggle-icon.aberto { transform: rotate(180deg); }
-
-        /* Rodapé do drawer */
-        .nav-drawer-footer {
-            padding: 16px 20px;
-            border-top: 0.5px solid rgba(255,255,255,0.08);
-            flex-shrink: 0;
-        }
-
-        .nav-drawer-footer a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px;
-            background: linear-gradient(90deg, #c8922a, #e8b84b);
-            color: #07193a;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: opacity 0.2s;
-        }
-
-        .nav-drawer-footer a:hover { opacity: 0.88; }
 
         /* ══════════════════════════════════════════
            ALERTAS FLASH
@@ -459,7 +407,6 @@
         }
 
         .flash-alert {
-            border-radius: 8px;
             font-size: 13.5px;
             padding: 12px 16px;
             margin-bottom: 12px;
@@ -533,7 +480,6 @@
 
         .card-destaque-grande {
             grid-row: span 2;
-            border-radius: 14px;
             overflow: hidden;
             box-shadow: var(--sombra);
             text-decoration: none;
@@ -556,7 +502,6 @@
         .card-destaque-grande .card-corpo { padding: 24px; flex: 1; display: flex; flex-direction: column; }
 
         .card-destaque-pequeno {
-            border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--sombra);
             text-decoration: none;
@@ -582,7 +527,6 @@
             align-items: center;
             gap: 5px;
             padding: 3px 10px;
-            border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
             background: #fef3c7;
@@ -632,7 +576,6 @@
         .grid-noticias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
         .card-noticia {
-            border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--sombra);
             background: var(--branco);
@@ -665,7 +608,6 @@
 
         .pag-btn {
             padding: 8px 14px;
-            border-radius: 8px;
             font-size: 13.5px;
             font-weight: 500;
             color: var(--azul);
@@ -708,7 +650,6 @@
             padding: 13px 28px;
             background: var(--ouro);
             color: var(--azul);
-            border-radius: 10px;
             font-size: 14.5px;
             font-weight: 700;
             text-decoration: none;
@@ -724,7 +665,6 @@
             padding: 13px 28px;
             background: rgba(255,255,255,0.12);
             color: #fff;
-            border-radius: 10px;
             font-size: 14.5px;
             font-weight: 600;
             text-decoration: none;
@@ -794,7 +734,6 @@
         .footer-social a {
             display: inline-flex;
             width: 34px; height: 34px;
-            border-radius: 8px;
             background: rgba(255,255,255,0.08);
             align-items: center; justify-content: center;
             color: rgba(255,255,255,0.60);
@@ -844,6 +783,8 @@
         @media (max-width: 768px) {
             .pub-nav-links { display: none; }
             .nav-hamburguer { display: flex; }
+            .btn-acesso { display: none; }
+            .btn-acesso-icon { display: inline-flex; }
         }
 
         @media (max-width: 640px) {
@@ -861,21 +802,14 @@
 <body>
 
 {{-- ══════════════════════════════════════════ --}}
-{{-- OVERLAY e DRAWER MÓVEL                     --}}
+{{-- OVERLAY                                    --}}
 {{-- ══════════════════════════════════════════ --}}
 <div class="nav-overlay" id="navOverlay" onclick="fecharDrawer()"></div>
 
+{{-- ══════════════════════════════════════════ --}}
+{{-- DRAWER MÓVEL (sem header, sem logo)        --}}
+{{-- ══════════════════════════════════════════ --}}
 <div class="nav-drawer" id="navDrawer">
-    <div class="nav-drawer-header">
-        <a href="{{ route('home') }}" class="nav-drawer-brand" onclick="fecharDrawer()">
-            <img src="{{ asset('images/logo.png') }}" alt="Logotipo ORDEPDITA">
-            <span class="nav-drawer-brand-nome">AATDSPA</span>
-        </a>
-        <button class="nav-drawer-fechar" onclick="fecharDrawer()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
     <ul class="nav-drawer-links">
         <li>
             <a href="{{ route('home') }}"
@@ -898,7 +832,7 @@
             </button>
             <ul class="nav-drawer-submenu" id="drawerSubmenuPedidos">
                 <li>
-                    <a href="{{ route('pedido.carteira.form') }}" onclick="fecharDrawer()">
+                    <a href="#" onclick="fecharDrawer()">
                         <i class="fas fa-id-card"></i> Carteira Profissional
                     </a>
                 </li>
@@ -929,9 +863,8 @@
             </a>
         </li>
 
-        <div class="nav-drawer-divider"></div>
-
         @auth
+            <div class="nav-drawer-divider"></div>
             @if(auth()->user()->isSuperAdmin())
                 <li>
                     <a href="{{ route('super-admin.dashboard') }}" onclick="fecharDrawer()">
@@ -945,23 +878,17 @@
                     </a>
                 </li>
             @endif
+            <div class="nav-drawer-divider"></div>
+            <li>
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" style="color:#f87171;">
+                        <i class="fas fa-sign-out-alt" style="color:#f87171;"></i> Sair da conta
+                    </button>
+                </form>
+            </li>
         @endauth
     </ul>
-
-    <div class="nav-drawer-footer">
-        @auth
-            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-                @csrf
-                <button type="submit" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px;background:linear-gradient(90deg,#c8922a,#e8b84b);color:#07193a;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;border:none;border-radius:8px;cursor:pointer;">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </form>
-        @else
-            <a href="{{ route('login') }}">
-                <i class="fas fa-lock"></i> ACESSO À PLATAFORMA
-            </a>
-        @endauth
-    </div>
 </div>
 
 {{-- ══════════════════════════════════════════ --}}
@@ -1002,8 +929,13 @@
                 </div>
             </div>
         @else
+            {{-- Desktop: botão completo --}}
             <a href="{{ route('login') }}" class="btn-acesso">
                 <i class="fas fa-lock"></i> ACESSO
+            </a>
+            {{-- Mobile: só cadeado --}}
+            <a href="{{ route('login') }}" class="btn-acesso-icon">
+                <i class="fas fa-lock"></i>
             </a>
         @endauth
     </div>
@@ -1015,8 +947,7 @@
 <nav class="pub-nav">
     <div class="pub-nav-inner">
 
-        {{-- Botão hambúrguer (esquerda em mobile) --}}
-        <button class="nav-hamburguer" id="navHamburguer" onclick="abrirDrawer()" aria-label="Menu">
+        <button class="nav-hamburguer" id="navHamburguer" onclick="toggleDrawer()" aria-label="Menu">
             <span></span>
             <span></span>
             <span></span>
@@ -1024,7 +955,7 @@
 
         <a href="{{ route('home') }}" class="pub-nav-brand">
             <div class="pub-nav-logo">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Logotipo ORDEPDITA">
+                <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA">
             </div>
             <div>
                 <div class="pub-nav-nome">AATDSPA</div>
@@ -1098,9 +1029,6 @@
 </div>
 @endif
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- CONTEÚDO DA PÁGINA                         --}}
-{{-- ══════════════════════════════════════════ --}}
 @yield("content")
 
 {{-- ══════════════════════════════════════════ --}}
@@ -1111,7 +1039,7 @@
 
         <div class="footer-marca">
             <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:44px; height:44px; border-radius:8px; overflow:hidden; flex-shrink:0;">
+                <div style="width:44px; height:44px; overflow:hidden; flex-shrink:0;">
                     <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA"
                          style="width:100%; height:100%; object-fit:contain;">
                 </div>
@@ -1185,11 +1113,14 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    function abrirDrawer() {
-        document.getElementById('navDrawer').classList.add('aberto');
-        document.getElementById('navOverlay').classList.add('visivel');
-        document.getElementById('navHamburguer').classList.add('aberto');
-        document.body.style.overflow = 'hidden';
+    function toggleDrawer() {
+        const drawer = document.getElementById('navDrawer');
+        const overlay = document.getElementById('navOverlay');
+        const btn = document.getElementById('navHamburguer');
+        const aberto = drawer.classList.toggle('aberto');
+        overlay.classList.toggle('visivel', aberto);
+        btn.classList.toggle('aberto', aberto);
+        document.body.style.overflow = aberto ? 'hidden' : '';
     }
 
     function fecharDrawer() {
@@ -1206,7 +1137,6 @@
         icon.classList.toggle('aberto', aberto);
     }
 
-    // Fechar com tecla Escape
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') fecharDrawer();
     });
