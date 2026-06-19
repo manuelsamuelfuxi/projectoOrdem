@@ -1,27 +1,35 @@
-# Usamos uma imagem oficial que já tem GD e MySQL pronto
-FROM thecodingmachine/php:8.2-v4-fpm-apache AS builder
+FROM php:8.2-fpm
 
-# Definir diretório de trabalho
-WORKDIR /app
+# Instalar dependências do sistema
+RUN apt-get update && apt-get install -y \
+    git curl libpng-dev libonig-dev libxml2-dev zip unzip nginx \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
 
 # Copiar ficheiros do projeto
-COPY . /app
+COPY . .
 
-# Instalar dependências (Composer já vem instalado nesta imagem)
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
+# Instalar dependências PHP
+RUN composer install --optimize-autoloader --no-dev
 
-# Permissões de pasta
-RUN chown -R docker:docker /app \
-    && chmod -R 775 /app/storage \
-    && chmod -R 775 /app/bootstrap/cache
+# Permissões
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage
 
-# Script de Start (Criado inline para não depender de ficheiros .sh)
-RUN echo '#!/bin/bash\n\
-php artisan migrate --force || true\n\
-php artisan config:cache\n\
-php artisan route:cache\n\
-php artisan view:cache\n\
-php artisan storage:link || true\n\
-apache2-foreground' > /usr/local/bin/start-app.sh && chmod +x /usr/local/bin/start-app.sh
+# Copiar configuração do Nginx
+COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-CMD ["/usr/local/bin/start-app.sh"]
+# Gerar key se não existir
+RUN php artisan config:cache || true
+
+EXPOSE 80
+
+# Script de arranque
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]
