@@ -14,31 +14,31 @@ return new class extends Migration
 
             // Morada pessoal
             if (!in_array('provincia_id', $existentes)) {
-                $table->foreignId('provincia_id')->nullable()->after('bairro')
+                $table->foreignId('provincia_id')->nullable()
                       ->constrained('provincias')->nullOnDelete();
             }
             if (!in_array('municipio_id', $existentes)) {
-                $table->foreignId('municipio_id')->nullable()->after('provincia_id')
+                $table->foreignId('municipio_id')->nullable()
                       ->constrained('municipios')->nullOnDelete();
             }
 
             // Instituição de trabalho
             if (!in_array('provincia_trabalho_id', $existentes)) {
-                $table->foreignId('provincia_trabalho_id')->nullable()->after('sector')
+                $table->foreignId('provincia_trabalho_id')->nullable()
                       ->constrained('provincias')->nullOnDelete();
             }
             if (!in_array('municipio_trabalho_id', $existentes)) {
-                $table->foreignId('municipio_trabalho_id')->nullable()->after('provincia_trabalho_id')
+                $table->foreignId('municipio_trabalho_id')->nullable()
                       ->constrained('municipios')->nullOnDelete();
             }
 
             // Curso e Função
             if (!in_array('curso_id', $existentes)) {
-                $table->foreignId('curso_id')->nullable()->after('institution')
+                $table->foreignId('curso_id')->nullable()
                       ->constrained('cursos')->nullOnDelete();
             }
             if (!in_array('funcao_id', $existentes)) {
-                $table->foreignId('funcao_id')->nullable()->after('professional_category')
+                $table->foreignId('funcao_id')->nullable()
                       ->constrained('funcoes')->nullOnDelete();
             }
         });
@@ -48,12 +48,11 @@ return new class extends Migration
             $existentes = array_column(DB::select('DESCRIBE applications'), 'Field');
 
             $remover = [
-                'province', 'municipio', 'bairro',        // morada pessoal (bairro mantém-se em texto)
-                'provincia_trabalho', 'municipio_trabalho', // trabalho
-                'curso', 'professional_category',          // curso e função (string)
+                'province', 'municipio', 'bairro',
+                'provincia_trabalho', 'municipio_trabalho',
+                'curso', 'professional_category',
             ];
 
-            // Remover apenas as que existem e NÃO são FK novas
             $fks = ['provincia_id','municipio_id','provincia_trabalho_id','municipio_trabalho_id','curso_id','funcao_id'];
             $confirmar = array_filter($remover, fn($col) => in_array($col, $existentes) && !in_array($col, $fks));
 
@@ -79,7 +78,6 @@ return new class extends Migration
                 'curso_id', 'funcao_id',
             ]);
 
-            // Restaurar colunas string
             $table->string('province')->nullable();
             $table->string('municipio')->nullable();
             $table->string('provincia_trabalho')->nullable();
