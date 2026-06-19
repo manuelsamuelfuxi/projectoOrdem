@@ -55,12 +55,6 @@
         </div>
 
         <div class="servicos-grid">
-            <a href="{{ route('pedido.carteira.form') }}" class="servico-card">
-                <div class="servico-icone"><i class="fas fa-id-card"></i></div>
-                <div class="servico-titulo">Carteira Profissional</div>
-                <div class="servico-desc">Emissão da carteira que certifica o exercício legal da profissão técnica em Angola.</div>
-                <div class="servico-link">Solicitar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
-            </a>
 
             <a href="{{ route('pedido.licenca.form') }}" class="servico-card">
                 <div class="servico-icone" style="background:linear-gradient(135deg,#c8922a,#e8b84b);">
