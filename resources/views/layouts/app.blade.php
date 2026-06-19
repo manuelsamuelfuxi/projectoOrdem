@@ -37,9 +37,7 @@
             line-height: 1.6;
         }
 
-        /* ══════════════════════════════════════════
-           TOP BAR
-        ══════════════════════════════════════════ */
+        /* TOP BAR */
         .top-bar {
             background: #07193a;
             padding: 7px 0;
@@ -87,13 +85,11 @@
 
         .btn-acesso:hover { opacity: 0.88; transform: translateY(-1px); color: #07193a; }
 
-        /* Versão compacta só com cadeado para mobile */
         .btn-acesso-icon {
             display: none;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 30px; height: 30px;
             background: linear-gradient(135deg, #c8922a, #2563eb);
             color: #07193a;
             border: none;
@@ -159,9 +155,7 @@
         .top-dropdown-item i { color: var(--ouro); width: 14px; }
         .top-dropdown-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 4px 0; }
 
-        /* ══════════════════════════════════════════
-           NAVBAR PRINCIPAL
-        ══════════════════════════════════════════ */
+        /* NAVBAR */
         .pub-nav {
             background: var(--azul);
             position: sticky;
@@ -273,16 +267,13 @@
         .nav-drop-menu a i { color: var(--ouro); width: 14px; }
         .nav-drop-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 4px 0; }
 
-        /* ══════════════════════════════════════════
-           MENU HAMBÚRGUER
-        ══════════════════════════════════════════ */
+        /* HAMBÚRGUER */
         .nav-hamburguer {
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 42px;
-            height: 42px;
+            width: 42px; height: 42px;
             background: rgba(255,255,255,0.10);
             border: none;
             cursor: pointer;
@@ -295,18 +286,16 @@
 
         .nav-hamburguer span {
             display: block;
-            width: 22px;
-            height: 2px;
+            width: 22px; height: 2px;
             background: #fff;
             transition: transform 0.3s, opacity 0.3s;
         }
 
-        /* Quando aberto: vira X */
         .nav-hamburguer.aberto span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .nav-hamburguer.aberto span:nth-child(2) { opacity: 0; }
         .nav-hamburguer.aberto span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* Overlay escuro */
+        /* OVERLAY */
         .nav-overlay {
             display: none;
             position: fixed;
@@ -317,24 +306,56 @@
 
         .nav-overlay.visivel { display: block; }
 
-        /* Drawer — começa logo abaixo da navbar (68px) */
+        /* DRAWER LATERAL ESQUERDO */
         .nav-drawer {
             position: fixed;
-            top: 68px; /* altura exacta da navbar */
+            top: 0;
             left: 0;
-            width: 100%;
-            max-height: calc(100vh - 68px);
+            width: 280px;
+            height: 100vh;
             background: #07193a;
-            z-index: 499;
-            transform: translateY(-110%);
+            z-index: 9999;
+            transform: translateX(-100%);
             transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            box-shadow: 4px 0 24px rgba(0,0,0,0.4);
         }
 
-        .nav-drawer.aberto { transform: translateY(0); }
+        .nav-drawer.aberto { transform: translateX(0); }
+
+        /* Cabeçalho do drawer: só logo */
+        .nav-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+
+        .nav-drawer-logo {
+            width: 44px; height: 44px;
+            overflow: hidden;
+        }
+
+        .nav-drawer-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+        .nav-drawer-fechar {
+            width: 34px; height: 34px;
+            border: none;
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.70);
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .nav-drawer-fechar:hover { background: rgba(255,255,255,0.16); color: #fff; }
 
         .nav-drawer-links {
             list-style: none;
@@ -346,45 +367,40 @@
         .nav-drawer-links li button {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 15px 28px;
-            font-size: 15px;
+            gap: 12px;
+            padding: 14px 24px;
+            font-size: 14.5px;
             font-weight: 500;
-            color: rgba(255,255,255,0.82);
+            color: rgba(255,255,255,0.80);
             text-decoration: none;
             background: none;
             border: none;
             width: 100%;
             cursor: pointer;
             transition: background 0.15s, color 0.15s;
-            border-bottom: 0.5px solid rgba(255,255,255,0.05);
+            border-bottom: 0.5px solid rgba(255,255,255,0.04);
         }
 
         .nav-drawer-links li a:hover,
         .nav-drawer-links li button:hover,
-        .nav-drawer-links li a.ativo {
-            background: rgba(255,255,255,0.07);
-            color: #fff;
-        }
+        .nav-drawer-links li a.ativo { background: rgba(255,255,255,0.07); color: #fff; }
 
         .nav-drawer-links li a i,
-        .nav-drawer-links li button i { color: var(--ouro); width: 18px; }
+        .nav-drawer-links li button i { color: var(--ouro); width: 16px; }
 
-        .nav-drawer-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 4px 0; }
+        .nav-drawer-divider { border-top: 0.5px solid rgba(255,255,255,0.08); margin: 6px 0; }
 
-        /* Sub-menu Pedidos no drawer */
         .nav-drawer-submenu {
             list-style: none;
-            background: rgba(0,0,0,0.25);
+            background: rgba(0,0,0,0.20);
             display: none;
         }
 
         .nav-drawer-submenu.aberto { display: block; }
 
         .nav-drawer-submenu li a {
-            padding: 12px 28px 12px 60px;
-            font-size: 14px;
-            border-bottom: 0.5px solid rgba(255,255,255,0.04);
+            padding: 12px 24px 12px 52px;
+            font-size: 13.5px;
         }
 
         .nav-drawer-toggle-icon {
@@ -397,14 +413,8 @@
 
         .nav-drawer-toggle-icon.aberto { transform: rotate(180deg); }
 
-        /* ══════════════════════════════════════════
-           ALERTAS FLASH
-        ══════════════════════════════════════════ */
-        .flash-wrap {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 20px 24px 0;
-        }
+        /* FLASH */
+        .flash-wrap { max-width: 1180px; margin: 0 auto; padding: 20px 24px 0; }
 
         .flash-alert {
             font-size: 13.5px;
@@ -420,358 +430,71 @@
         .flash-alert-warning { background: #fffbeb; border-color: #fde68a; color: #b45309; }
         .flash-alert-danger  { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
 
-        /* ══════════════════════════════════════════
-           UTILITÁRIOS PÚBLICOS
-        ══════════════════════════════════════════ */
+        /* UTILITÁRIOS */
         .secao { max-width: 1180px; margin: 0 auto; padding: 64px 24px; }
-
-        .secao-topo {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            margin-bottom: 36px;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .secao-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--ouro);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 6px;
-        }
-
-        .secao-titulo {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(22px, 3vw, 30px);
-            font-weight: 700;
-            color: var(--azul);
-            line-height: 1.2;
-        }
-
-        .link-ver-todas {
-            font-size: 13.5px;
-            font-weight: 600;
-            color: var(--azul-claro);
-            text-decoration: none;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: gap 0.15s;
-        }
-
+        .secao-topo { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 36px; gap: 16px; flex-wrap: wrap; }
+        .secao-label { font-size: 11px; font-weight: 600; color: var(--ouro); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+        .secao-titulo { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 30px); font-weight: 700; color: var(--azul); line-height: 1.2; }
+        .link-ver-todas { font-size: 13.5px; font-weight: 600; color: var(--azul-claro); text-decoration: none; white-space: nowrap; display: flex; align-items: center; gap: 6px; transition: gap 0.15s; }
         .link-ver-todas:hover { gap: 10px; }
+        .separador { background: var(--cinza-f); border-top: 0.5px solid var(--cinza-b); border-bottom: 0.5px solid var(--cinza-b); }
 
-        .separador {
-            background: var(--cinza-f);
-            border-top: 0.5px solid var(--cinza-b);
-            border-bottom: 0.5px solid var(--cinza-b);
-        }
-
-        .grid-destaques {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 20px;
-        }
-
-        .card-destaque-grande {
-            grid-row: span 2;
-            overflow: hidden;
-            box-shadow: var(--sombra);
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            background: var(--branco);
-            border: 0.5px solid var(--cinza-b);
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-
+        .grid-destaques { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 20px; }
+        .card-destaque-grande { grid-row: span 2; overflow: hidden; box-shadow: var(--sombra); text-decoration: none; color: inherit; display: flex; flex-direction: column; background: var(--branco); border: 0.5px solid var(--cinza-b); transition: box-shadow 0.2s, transform 0.2s; }
         .card-destaque-grande:hover { box-shadow: var(--sombra-h); transform: translateY(-3px); }
         .card-destaque-grande .card-img { height: 300px; object-fit: cover; width: 100%; display: block; }
-        .card-destaque-grande .card-img-placeholder {
-            height: 300px;
-            background: linear-gradient(135deg, var(--cinza-b), var(--cinza-f));
-            display: flex; align-items: center; justify-content: center;
-            color: #c8d3e8; font-size: 48px;
-        }
+        .card-destaque-grande .card-img-placeholder { height: 300px; background: linear-gradient(135deg, var(--cinza-b), var(--cinza-f)); display: flex; align-items: center; justify-content: center; color: #c8d3e8; font-size: 48px; }
         .card-destaque-grande .card-corpo { padding: 24px; flex: 1; display: flex; flex-direction: column; }
-
-        .card-destaque-pequeno {
-            overflow: hidden;
-            box-shadow: var(--sombra);
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            background: var(--branco);
-            border: 0.5px solid var(--cinza-b);
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-
+        .card-destaque-pequeno { overflow: hidden; box-shadow: var(--sombra); text-decoration: none; color: inherit; display: flex; background: var(--branco); border: 0.5px solid var(--cinza-b); transition: box-shadow 0.2s, transform 0.2s; }
         .card-destaque-pequeno:hover { box-shadow: var(--sombra-h); transform: translateY(-2px); }
         .card-destaque-pequeno .card-img { width: 130px; min-width: 130px; object-fit: cover; display: block; }
-        .card-destaque-pequeno .card-img-placeholder {
-            width: 130px; min-width: 130px;
-            background: linear-gradient(135deg, var(--cinza-b), var(--cinza-f));
-            display: flex; align-items: center; justify-content: center;
-            color: #c8d3e8; font-size: 28px;
-        }
+        .card-destaque-pequeno .card-img-placeholder { width: 130px; min-width: 130px; background: linear-gradient(135deg, var(--cinza-b), var(--cinza-f)); display: flex; align-items: center; justify-content: center; color: #c8d3e8; font-size: 28px; }
         .card-destaque-pequeno .card-corpo { padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; }
-
-        .badge-destaque {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            font-size: 11px;
-            font-weight: 600;
-            background: #fef3c7;
-            color: #92400e;
-            border: 0.5px solid #fde68a;
-            margin-bottom: 10px;
-            width: fit-content;
-        }
-
-        .card-titulo-grande {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--azul);
-            line-height: 1.35;
-            margin-bottom: 10px;
-        }
-
-        .card-titulo-pequeno {
-            font-family: 'Playfair Display', serif;
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--azul);
-            line-height: 1.35;
-            margin-bottom: 6px;
-        }
-
-        .card-excerto {
-            font-size: 13.5px;
-            color: var(--muted);
-            line-height: 1.6;
-            flex: 1;
-            margin-bottom: 14px;
-        }
-
-        .card-meta {
-            font-size: 12px;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
+        .badge-destaque { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; font-size: 11px; font-weight: 600; background: #fef3c7; color: #92400e; border: 0.5px solid #fde68a; margin-bottom: 10px; width: fit-content; }
+        .card-titulo-grande { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--azul); line-height: 1.35; margin-bottom: 10px; }
+        .card-titulo-pequeno { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--azul); line-height: 1.35; margin-bottom: 6px; }
+        .card-excerto { font-size: 13.5px; color: var(--muted); line-height: 1.6; flex: 1; margin-bottom: 14px; }
+        .card-meta { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .card-meta i { color: var(--ouro); }
-
         .grid-noticias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-
-        .card-noticia {
-            overflow: hidden;
-            box-shadow: var(--sombra);
-            background: var(--branco);
-            border: 0.5px solid var(--cinza-b);
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-
+        .card-noticia { overflow: hidden; box-shadow: var(--sombra); background: var(--branco); border: 0.5px solid var(--cinza-b); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s; }
         .card-noticia:hover { box-shadow: var(--sombra-h); transform: translateY(-3px); }
         .card-noticia .card-img { height: 180px; object-fit: cover; width: 100%; display: block; }
-        .card-noticia .card-img-placeholder {
-            height: 180px;
-            background: linear-gradient(135deg, var(--cinza-b), var(--cinza-f));
-            display: flex; align-items: center; justify-content: center;
-            color: #c8d3e8; font-size: 36px;
-        }
+        .card-noticia .card-img-placeholder { height: 180px; background: linear-gradient(135deg, var(--cinza-b), var(--cinza-f)); display: flex; align-items: center; justify-content: center; color: #c8d3e8; font-size: 36px; }
         .card-noticia .card-corpo { padding: 18px 20px; display: flex; flex-direction: column; flex: 1; }
-
-        .paginacao {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-
-        .pag-btn {
-            padding: 8px 14px;
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--azul);
-            background: var(--branco);
-            border: 0.5px solid var(--cinza-b);
-            text-decoration: none;
-            transition: background 0.15s, color 0.15s;
-        }
-
+        .paginacao { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 40px; flex-wrap: wrap; }
+        .pag-btn { padding: 8px 14px; font-size: 13.5px; font-weight: 500; color: var(--azul); background: var(--branco); border: 0.5px solid var(--cinza-b); text-decoration: none; transition: background 0.15s, color 0.15s; }
         .pag-btn:hover { background: var(--cinza-f); }
         .pag-btn.ativo { background: var(--azul); color: #fff; border-color: var(--azul); }
         .pag-btn.desativo { color: #c8d3e8; pointer-events: none; }
-
-        .banner-inst {
-            background: linear-gradient(135deg, var(--azul) 0%, var(--azul-med) 100%);
-            padding: 56px 24px;
-            text-align: center;
-        }
-
-        .banner-inst h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(22px, 3vw, 32px);
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 12px;
-        }
-
-        .banner-inst p {
-            font-size: 15px;
-            color: rgba(255,255,255,0.72);
-            max-width: 540px;
-            margin: 0 auto 28px;
-            line-height: 1.7;
-        }
-
-        .btn-hero-prim {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 13px 28px;
-            background: var(--ouro);
-            color: var(--azul);
-            font-size: 14.5px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: background 0.15s, transform 0.15s;
-        }
-
+        .banner-inst { background: linear-gradient(135deg, var(--azul) 0%, var(--azul-med) 100%); padding: 56px 24px; text-align: center; }
+        .banner-inst h2 { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 32px); font-weight: 700; color: #fff; margin-bottom: 12px; }
+        .banner-inst p { font-size: 15px; color: rgba(255,255,255,0.72); max-width: 540px; margin: 0 auto 28px; line-height: 1.7; }
+        .btn-hero-prim { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: var(--ouro); color: var(--azul); font-size: 14.5px; font-weight: 700; text-decoration: none; transition: background 0.15s, transform 0.15s; }
         .btn-hero-prim:hover { background: var(--ouro-claro); transform: translateY(-1px); color: var(--azul); }
-
-        .btn-hero-sec {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 13px 28px;
-            background: rgba(255,255,255,0.12);
-            color: #fff;
-            font-size: 14.5px;
-            font-weight: 600;
-            text-decoration: none;
-            border: 1px solid rgba(255,255,255,0.25);
-            transition: background 0.15s;
-        }
-
+        .btn-hero-sec { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: rgba(255,255,255,0.12); color: #fff; font-size: 14.5px; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.25); transition: background 0.15s; }
         .btn-hero-sec:hover { background: rgba(255,255,255,0.20); }
 
-        /* ══════════════════════════════════════════
-           FOOTER
-        ══════════════════════════════════════════ */
-        .pub-footer {
-            background: #07193a;
-            color: rgba(255,255,255,0.75);
-            padding: 56px 24px 0;
-        }
-
-        .pub-footer-inner {
-            max-width: 1180px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-        }
-
-        .footer-marca p {
-            font-size: 13.5px;
-            line-height: 1.7;
-            color: rgba(255,255,255,0.55);
-            margin-top: 14px;
-            max-width: 280px;
-        }
-
-        .footer-titulo {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--ouro);
-            margin-bottom: 16px;
-        }
-
+        /* FOOTER */
+        .pub-footer { background: #07193a; color: rgba(255,255,255,0.75); padding: 56px 24px 0; }
+        .pub-footer-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+        .footer-marca p { font-size: 13.5px; line-height: 1.7; color: rgba(255,255,255,0.55); margin-top: 14px; max-width: 280px; }
+        .footer-titulo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ouro); margin-bottom: 16px; }
         .footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-
-        .footer-links a {
-            font-size: 13.5px;
-            color: rgba(255,255,255,0.60);
-            text-decoration: none;
-            transition: color 0.15s;
-        }
-
+        .footer-links a { font-size: 13.5px; color: rgba(255,255,255,0.60); text-decoration: none; transition: color 0.15s; }
         .footer-links a:hover { color: #fff; }
-
         .footer-contacto { display: flex; flex-direction: column; gap: 10px; }
-
-        .footer-contacto-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 13.5px;
-            color: rgba(255,255,255,0.60);
-        }
-
+        .footer-contacto-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: rgba(255,255,255,0.60); }
         .footer-contacto-item i { color: var(--ouro); margin-top: 2px; flex-shrink: 0; width: 14px; }
-
-        .footer-social a {
-            display: inline-flex;
-            width: 34px; height: 34px;
-            background: rgba(255,255,255,0.08);
-            align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.60);
-            text-decoration: none;
-            font-size: 14px;
-            transition: background 0.15s, color 0.15s;
-            margin-right: 6px;
-        }
-
+        .footer-social a { display: inline-flex; width: 34px; height: 34px; background: rgba(255,255,255,0.08); align-items: center; justify-content: center; color: rgba(255,255,255,0.60); text-decoration: none; font-size: 14px; transition: background 0.15s, color 0.15s; margin-right: 6px; }
         .footer-social a:hover { background: rgba(255,255,255,0.16); color: #fff; }
-
-        .footer-bottom {
-            max-width: 1180px;
-            margin: 40px auto 0;
-            padding: 20px 0;
-            border-top: 0.5px solid rgba(255,255,255,0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
+        .footer-bottom { max-width: 1180px; margin: 40px auto 0; padding: 20px 0; border-top: 0.5px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .footer-bottom p { font-size: 12.5px; color: rgba(255,255,255,0.35); }
         .footer-bottom-links { display: flex; gap: 20px; }
-
-        .footer-bottom-links a {
-            font-size: 12.5px;
-            color: rgba(255,255,255,0.40);
-            text-decoration: none;
-            transition: color 0.15s;
-        }
-
+        .footer-bottom-links a { font-size: 12.5px; color: rgba(255,255,255,0.40); text-decoration: none; transition: color 0.15s; }
         .footer-bottom-links a:hover { color: rgba(255,255,255,0.80); }
 
-        /* ══════════════════════════════════════════
-           RESPONSIVO
-        ══════════════════════════════════════════ */
+        /* RESPONSIVO */
         @media (max-width: 960px) {
             .grid-destaques { grid-template-columns: 1fr; }
             .card-destaque-grande { grid-row: auto; }
@@ -783,6 +506,8 @@
         @media (max-width: 768px) {
             .pub-nav-links { display: none; }
             .nav-hamburguer { display: flex; }
+            .pub-nav-nome { display: none; }
+            .pub-nav-sub { display: none; }
             .btn-acesso { display: none; }
             .btn-acesso-icon { display: inline-flex; }
         }
@@ -792,8 +517,6 @@
             .pub-footer-inner { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; text-align: center; }
             .footer-bottom-links { justify-content: center; flex-wrap: wrap; }
-            .pub-nav-nome { font-size: 14px; }
-            .pub-nav-sub { display: none; }
         }
     </style>
 
@@ -801,27 +524,28 @@
 </head>
 <body>
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- OVERLAY                                    --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- OVERLAY --}}
 <div class="nav-overlay" id="navOverlay" onclick="fecharDrawer()"></div>
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- DRAWER MÓVEL (sem header, sem logo)        --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- DRAWER LATERAL ESQUERDO --}}
 <div class="nav-drawer" id="navDrawer">
+    <div class="nav-drawer-header">
+        <div class="nav-drawer-logo">
+            <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA">
+        </div>
+        <button class="nav-drawer-fechar" onclick="fecharDrawer()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
     <ul class="nav-drawer-links">
         <li>
-            <a href="{{ route('home') }}"
-               class="{{ request()->routeIs('home') ? 'ativo' : '' }}"
-               onclick="fecharDrawer()">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'ativo' : '' }}" onclick="fecharDrawer()">
                 <i class="fas fa-home"></i> Início
             </a>
         </li>
         <li>
-            <a href="{{ route('noticias.index') }}"
-               class="{{ request()->routeIs('noticias.*') ? 'ativo' : '' }}"
-               onclick="fecharDrawer()">
+            <a href="{{ route('noticias.index') }}" class="{{ request()->routeIs('noticias.*') ? 'ativo' : '' }}" onclick="fecharDrawer()">
                 <i class="fas fa-newspaper"></i> Notícias
             </a>
         </li>
@@ -849,16 +573,12 @@
             </ul>
         </li>
         <li>
-            <a href="{{ route('sobre') }}"
-               class="{{ request()->routeIs('sobre') ? 'ativo' : '' }}"
-               onclick="fecharDrawer()">
+            <a href="{{ route('sobre') }}" class="{{ request()->routeIs('sobre') ? 'ativo' : '' }}" onclick="fecharDrawer()">
                 <i class="fas fa-info-circle"></i> Sobre
             </a>
         </li>
         <li>
-            <a href="{{ route('contactos') }}"
-               class="{{ request()->routeIs('contactos') ? 'ativo' : '' }}"
-               onclick="fecharDrawer()">
+            <a href="{{ route('contactos') }}" class="{{ request()->routeIs('contactos') ? 'ativo' : '' }}" onclick="fecharDrawer()">
                 <i class="fas fa-envelope"></i> Contactos
             </a>
         </li>
@@ -891,9 +611,7 @@
     </ul>
 </div>
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- TOP BAR                                    --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- TOP BAR --}}
 <div class="top-bar">
     <div class="top-bar-inner">
         <div class="top-bar-info">
@@ -929,21 +647,17 @@
                 </div>
             </div>
         @else
-            {{-- Desktop: botão completo --}}
             <a href="{{ route('login') }}" class="btn-acesso">
                 <i class="fas fa-lock"></i> ACESSO
             </a>
-            {{-- Mobile: só cadeado --}}
-            <a href="{{ route('login') }}" class="btn-acesso-icon">
+            <a href="{{ route('login') }}" class="btn-acesso-icon" title="Acesso">
                 <i class="fas fa-lock"></i>
             </a>
         @endauth
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- NAVBAR PRINCIPAL                           --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- NAVBAR --}}
 <nav class="pub-nav">
     <div class="pub-nav-inner">
 
@@ -980,16 +694,10 @@
                     <i class="fas fa-chevron-down" style="font-size:10px; opacity:0.6;"></i>
                 </button>
                 <div class="nav-drop-menu">
-                    <a href="#">
-                        <i class="fas fa-id-card"></i> Carteira Profissional
-                    </a>
-                    <a href="{{ route('pedido.licenca.form') }}">
-                        <i class="fas fa-certificate"></i> Licença Profissional
-                    </a>
+                    <a href="#"><i class="fas fa-id-card"></i> Carteira Profissional</a>
+                    <a href="{{ route('pedido.licenca.form') }}"><i class="fas fa-certificate"></i> Licença Profissional</a>
                     <div class="nav-drop-divider"></div>
-                    <a href="{{ route('consulta.form') }}">
-                        <i class="fas fa-search"></i> Consultar Estado
-                    </a>
+                    <a href="{{ route('consulta.form') }}"><i class="fas fa-search"></i> Consultar Estado</a>
                 </div>
             </li>
             <li>
@@ -1006,9 +714,7 @@
     </div>
 </nav>
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- FLASH MESSAGES                             --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- FLASH --}}
 @if(session('success') || session('warning') || session('error'))
 <div class="flash-wrap">
     @if(session('success'))
@@ -1031,20 +737,15 @@
 
 @yield("content")
 
-{{-- ══════════════════════════════════════════ --}}
-{{-- FOOTER                                     --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- FOOTER --}}
 <footer class="pub-footer">
     <div class="pub-footer-inner">
-
         <div class="footer-marca">
             <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width:44px; height:44px; overflow:hidden; flex-shrink:0;">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA"
-                         style="width:100%; height:100%; object-fit:contain;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logotipo AATDSPA" style="width:100%; height:100%; object-fit:contain;">
                 </div>
-                <div style="font-family:'Playfair Display',serif; font-size:15px;
-                            font-weight:700; color:#fff; line-height:1.2;">AATDSPA</div>
+                <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:#fff; line-height:1.2;">AATDSPA</div>
             </div>
             <p>Associação da Ordem dos Técnicos de Diagnóstico e Terapeutas de Angola — regulação, valorização e defesa da classe técnica nacional.</p>
             <div class="footer-social" style="margin-top:16px;">
@@ -1054,7 +755,6 @@
                 <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
-
         <div>
             <div class="footer-titulo">Navegação</div>
             <ul class="footer-links">
@@ -1065,7 +765,6 @@
                 <li><a href="#"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Legislação</a></li>
             </ul>
         </div>
-
         <div>
             <div class="footer-titulo">Serviços</div>
             <ul class="footer-links">
@@ -1075,31 +774,16 @@
                 <li><a href="{{ route('login') }}"><i class="fas fa-chevron-right" style="font-size:10px; margin-right:4px;"></i> Área de Membro</a></li>
             </ul>
         </div>
-
         <div>
             <div class="footer-titulo">Contacto</div>
             <div class="footer-contacto">
-                <div class="footer-contacto-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Luanda, República de Angola</span>
-                </div>
-                <div class="footer-contacto-item">
-                    <i class="fas fa-phone"></i>
-                    <span>+244 948 607 983</span>
-                </div>
-                <div class="footer-contacto-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>www.aatdspa.ao@gmail.com</span>
-                </div>
-                <div class="footer-contacto-item">
-                    <i class="fas fa-clock"></i>
-                    <span>Segunda a Sexta, 08h–17h</span>
-                </div>
+                <div class="footer-contacto-item"><i class="fas fa-map-marker-alt"></i><span>Luanda, República de Angola</span></div>
+                <div class="footer-contacto-item"><i class="fas fa-phone"></i><span>+244 948 607 983</span></div>
+                <div class="footer-contacto-item"><i class="fas fa-envelope"></i><span>www.aatdspa.ao@gmail.com</span></div>
+                <div class="footer-contacto-item"><i class="fas fa-clock"></i><span>Segunda a Sexta, 08h–17h</span></div>
             </div>
         </div>
-
     </div>
-
     <div class="pub-footer-inner footer-bottom">
         <p>© {{ date('Y') }} Associação da ORDEPDITA — Todos os direitos reservados.</p>
         <div class="footer-bottom-links">
@@ -1114,10 +798,10 @@
 
 <script>
     function toggleDrawer() {
-        const drawer = document.getElementById('navDrawer');
+        const drawer  = document.getElementById('navDrawer');
         const overlay = document.getElementById('navOverlay');
-        const btn = document.getElementById('navHamburguer');
-        const aberto = drawer.classList.toggle('aberto');
+        const btn     = document.getElementById('navHamburguer');
+        const aberto  = drawer.classList.toggle('aberto');
         overlay.classList.toggle('visivel', aberto);
         btn.classList.toggle('aberto', aberto);
         document.body.style.overflow = aberto ? 'hidden' : '';
@@ -1132,14 +816,12 @@
 
     function toggleSubmenuDrawer(btn) {
         const submenu = btn.nextElementSibling;
-        const icon = btn.querySelector('.nav-drawer-toggle-icon');
-        const aberto = submenu.classList.toggle('aberto');
+        const icon    = btn.querySelector('.nav-drawer-toggle-icon');
+        const aberto  = submenu.classList.toggle('aberto');
         icon.classList.toggle('aberto', aberto);
     }
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') fecharDrawer();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDrawer(); });
 </script>
 
 @stack("scripts")
