@@ -11,126 +11,115 @@ class NoticiaController extends Controller
 {
     public function index()
     {
-        $noticias = Noticia::orderBy("created_at", "desc")->paginate(15);
-        
-        return view("admin.noticias.index", compact("noticias"));
+        $noticias = Noticia::orderBy('created_at', 'desc')->paginate(15);
+
+        return view('admin.noticias.index', compact('noticias'));
     }
 
     public function create()
     {
-        return view("admin.noticias.create");
+        return view('admin.noticias.create');
     }
 
     public function store(GerirNoticiaRequest $request)
     {
         $dados = $request->validated();
 
-        // Processa o upload da imagem
-        if ($request->hasFile("imagem")) {
-            $caminho = $request->file("imagem")->store("noticias", "public");
-            $dados["imagem_path"] = $caminho; // ✅ Usa o campo correto
+        if ($request->hasFile('imagem')) {
+            $caminho = $request->file('imagem')->store('noticias', 'public');
+            $dados['imagem_path'] = $caminho;
         }
 
-        $dados["criado_por"] = auth()->id();
+        $dados['criado_por'] = auth()->id();
 
-        // Se data_publicacao foi enviada, usa ela; senão, define baseado no status
-        if (!empty($dados["data_publicacao"])) {
-            $dados["publicado_em"] = $dados["data_publicacao"];
-        } elseif ($dados["status"] === "publicado") {
-            $dados["publicado_em"] = now();
+        if (!empty($dados['data_publicacao'])) {
+            $dados['publicado_em'] = $dados['data_publicacao'];
+        } elseif ($dados['status'] === 'publicado') {
+            $dados['publicado_em'] = now();
         } else {
-            $dados["publicado_em"] = null;
+            $dados['publicado_em'] = null;
         }
 
-        // Remove campos que não estão no fillable
-        unset($dados["data_publicacao"]);
-
-        // LOG DE DEPURAÇÃO
-        \Log::info('Admin - Criando notícia:', $dados);
+        unset($dados['data_publicacao']);
 
         Noticia::create($dados);
 
         return redirect()
-            ->route("admin.noticias.index")
-            ->with("success", "Notícia criada com sucesso!");
+            ->route('admin.noticias.index')
+            ->with('success', 'Notícia criada com sucesso!');
+    }
+
+    public function show(Noticia $noticia)
+    {
+        return view('admin.noticias.show', compact('noticia'));
     }
 
     public function edit(Noticia $noticia)
     {
-        return view("admin.noticias.edit", compact("noticia"));
+        return view('admin.noticias.edit', compact('noticia'));
     }
 
     public function update(GerirNoticiaRequest $request, Noticia $noticia)
     {
         $dados = $request->validated();
-        
-        // Processa o upload da nova imagem
-        if ($request->hasFile("imagem")) {
-            // Remove a imagem antiga
-            if ($noticia->imagem_path && Storage::disk("public")->exists($noticia->imagem_path)) {
-                Storage::disk("public")->delete($noticia->imagem_path);
+
+        if ($request->hasFile('imagem')) {
+            if ($noticia->imagem_path && Storage::disk('public')->exists($noticia->imagem_path)) {
+                Storage::disk('public')->delete($noticia->imagem_path);
             }
-            
-            $caminho = $request->file("imagem")->store("noticias", "public");
-            $dados["imagem_path"] = $caminho;
-        }
-        
-        $dados["atualizado_por"] = auth()->id();
 
-        // Se data_publicacao foi enviada, usa ela; senão, define baseado no status
-        if (!empty($dados["data_publicacao"])) {
-            $dados["publicado_em"] = $dados["data_publicacao"];
-        } elseif ($dados["status"] === "publicado" && empty($noticia->publicado_em)) {
-            $dados["publicado_em"] = now();
+            $caminho = $request->file('imagem')->store('noticias', 'public');
+            $dados['imagem_path'] = $caminho;
         }
 
-        // Remove campos que não estão no fillable
-        unset($dados["data_publicacao"]);
+        $dados['atualizado_por'] = auth()->id();
 
-        // LOG DE DEPURAÇÃO
-        \Log::info('Admin - Atualizando notícia:', $dados);
+        if (!empty($dados['data_publicacao'])) {
+            $dados['publicado_em'] = $dados['data_publicacao'];
+        } elseif ($dados['status'] === 'publicado' && empty($noticia->publicado_em)) {
+            $dados['publicado_em'] = now();
+        }
+
+        unset($dados['data_publicacao']);
 
         $noticia->update($dados);
-        
+
         return redirect()
-            ->route("admin.noticias.index")
-            ->with("success", "Notícia atualizada com sucesso!");
+            ->route('admin.noticias.index')
+            ->with('success', 'Notícia actualizada com sucesso!');
     }
 
     public function destroy(Noticia $noticia)
     {
-        // Remove a imagem associada
-        if ($noticia->imagem_path && Storage::disk("public")->exists($noticia->imagem_path)) {
-            Storage::disk("public")->delete($noticia->imagem_path);
+        if ($noticia->imagem_path && Storage::disk('public')->exists($noticia->imagem_path)) {
+            Storage::disk('public')->delete($noticia->imagem_path);
         }
-        
+
         $noticia->delete();
-        
+
         return redirect()
-            ->route("admin.noticias.index")
-            ->with("success", "Notícia removida com sucesso!");
+            ->route('admin.noticias.index')
+            ->with('success', 'Notícia removida com sucesso!');
     }
 
     public function publicar(Noticia $noticia)
     {
         $noticia->update([
-            "status" => "publicado",
-            "publicado_em" => now()
+            'status'       => 'publicado',
+            'publicado_em' => now(),
         ]);
-        
+
         return redirect()
-            ->route("admin.noticias.index")
-            ->with("success", "Notícia publicada!");
+            ->route('admin.noticias.index')
+            ->with('success', 'Notícia publicada!');
     }
 
     public function arquivar(Noticia $noticia)
     {
-        $noticia->update([
-            "status" => "arquivado"
-        ]);
-        
+        $noticia->update(['status' => 'arquivado']);
+
         return redirect()
-            ->route("admin.noticias.index")
-            ->with("success", "Notícia arquivada!");
+            ->route('admin.noticias.index')
+            ->with('success', 'Notícia arquivada!');
     }
 }

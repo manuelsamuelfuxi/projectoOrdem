@@ -27,6 +27,8 @@ Route::prefix("pedidos")->name("pedidos.")->group(function () {
 
 // Notícias
 Route::resource("noticias", NoticiaController::class)->except(["show"]);
+Route::patch("noticias/{noticia}/publicar", [NoticiaController::class, "publicar"])->name("noticias.publicar");
+Route::patch("noticias/{noticia}/arquivar", [NoticiaController::class, "arquivar"])->name("noticias.arquivar");
 
 // Relatórios — descomentar quando o módulo estiver implementado
 Route::prefix("relatorios")->name("relatorios.")->group(function () {
