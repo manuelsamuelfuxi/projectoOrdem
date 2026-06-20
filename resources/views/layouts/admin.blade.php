@@ -233,7 +233,7 @@
                 <i class="fas fa-user-shield"></i>
             </div>
             <div>
-                <div class="brand-text">ORDEPDITA</div>
+                <div class="brand-text">AATDSPA</div>
                 <div class="brand-sub">Administrador</div>
             </div>
         </div>

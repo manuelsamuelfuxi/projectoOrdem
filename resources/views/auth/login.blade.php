@@ -267,7 +267,7 @@
             </div>
 
             <div class="login-footer">
-                <p>Ordem dos Profissionais de Diagnóstico e Terapêutica de Angola</p>
+                <p>Associação de apoio dos técnicos de diagnóstico, terapeutica e saúde pública de Angola</p>
             </div>
 
         </div>

@@ -50,7 +50,7 @@
             <div class="secao-label"><i class="fas fa-cogs"></i> O que fazemos</div>
             <div class="secao-titulo">Os nossos Serviços</div>
             <p style="font-size:15px; color:var(--muted); max-width:560px; margin:12px auto 0; line-height:1.7;">
-                A ORDEPDITA disponibiliza um conjunto de serviços para os profissionais técnicos angolanos.
+                A AATDSPA disponibiliza um conjunto de serviços para os profissionais técnicos angolanos.
             </p>
         </div>
 
