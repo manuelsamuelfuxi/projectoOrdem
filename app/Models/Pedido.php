@@ -161,8 +161,30 @@ class Pedido extends Model
         match($novoStatus) {
             EstadoPedido::PAGAMENTO_CONFIRMADO => event(new PagamentoConfirmado($this)),
             EstadoPedido::APROVADO             => event(new PedidoAprovado($this)),
-            EstadoPedido::DOCUMENTO_EMITIDO => event(new DocumentoEmitido($this, $utilizador)),
+            EstadoPedido::DOCUMENTO_EMITIDO    => event(new DocumentoEmitido($this, $utilizador)),
             default                            => null,
         };
+    }
+
+    // ── Relatórios ────────────────────────────────────────────────────────────
+
+    public function obterDadosRelatorioPedidos(array $filtros = []): array
+    {
+        $query = self::with('pagamento')
+            ->when($filtros['data_inicio'] ?? null, fn($q, $v) => $q->whereDate('created_at', '>=', $v))
+            ->when($filtros['data_fim']    ?? null, fn($q, $v) => $q->whereDate('created_at', '<=', $v))
+            ->when($filtros['status']      ?? null, fn($q, $v) => $q->where('status', $v))
+            ->latest();
+
+        $pedidos = $query->get();
+
+        $estatisticas = [
+            'total'                   => $pedidos->count(),
+            'aguardando_pagamento'    => $pedidos->filter(fn($p) => $p->status->value === 'nao_pago')->count(),
+            'aguardando_comprovativo' => $pedidos->filter(fn($p) => $p->status->value === 'aguarda_comprovativo')->count(),
+            'aprovados'               => $pedidos->filter(fn($p) => $p->status->value === 'aprovado')->count(),
+        ];
+
+        return compact('pedidos', 'estatisticas');
     }
 }
