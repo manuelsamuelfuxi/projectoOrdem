@@ -46,13 +46,21 @@ class PedidoController extends Controller
     }
 
     public function salvarEtapa1(Etapa1Request $request)
-    {
-        Session::put('dados_etapa1', $this->pedidoService->prepararEtapa1($request));
+{
+    // DEBUG TEMPORÁRIO
+    \Log::channel('stderr')->info('[DEBUG Etapa1]', [
+        'has_file'     => $request->hasFile('foto'),
+        'files'        => array_keys($request->allFiles()),
+        'content_type' => $request->header('Content-Type'),
+    ]);
 
-        return redirect()->route('pedido.dados-profissionais', [
-            'tipo' => $request->validated('tipo_documento'),
-        ]);
-    }
+    $dados = $this->pedidoService->prepararEtapa1($request);
+    Session::put('dados_etapa1', $dados);
+
+    return redirect()->route('pedido.dados-profissionais', [
+        'tipo' => $request->validated('tipo_documento'),
+    ]);
+}
 
     // ── Etapa 2 ───────────────────────────────────────────────────────────────
 
