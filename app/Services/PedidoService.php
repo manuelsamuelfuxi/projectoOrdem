@@ -26,20 +26,22 @@ class PedidoService
     // =========================================================
 
     public function prepararEtapa1(Etapa1Request $request): array
-    {
-        $dados = $request->validated();
+{
+    $dados = $request->validated();
 
-        if ($request->hasFile('foto')) {
-            $dados['foto_path'] = $request->file('foto')->store('temp/fotos', 'public');
-        }
-
-        // IMPORTANTE: remover o ficheiro binário antes de guardar em sessão.
-        // Objetos UploadedFile não são serializáveis de forma segura na sessão
-        // e corrompem o array dados_etapa1, fazendo foto_path "desaparecer".
-        unset($dados['foto']);
-
-        return $dados;
+    if ($request->hasFile('foto')) {
+        $dados['foto_path'] = $request->file('foto')->store('temp/fotos', 'public');
+        Log::info('[Etapa1] foto guardada', ['foto_path' => $dados['foto_path']]);
+    } else {
+        Log::info('[Etapa1] sem foto no request');
     }
+
+    unset($dados['foto']);
+
+    Log::info('[Etapa1] dados a guardar na sessão', ['keys' => array_keys($dados)]);
+
+    return $dados;
+}
 
     public function prepararEtapa2(Etapa2Request $request): array
     {
