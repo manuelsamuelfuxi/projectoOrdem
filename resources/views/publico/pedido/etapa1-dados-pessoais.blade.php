@@ -43,28 +43,30 @@
         <div class="pedido-preview-topo">
 
             {{-- Foto tipo passe --}}
-<div class="foto-passe-wrap">
-    <div class="foto-passe-placeholder" id="fotoPlaceholder"
-         onclick="document.getElementById('inputFoto').click()">
-        <i class="fas fa-camera"></i>
-        <span>Clique para<br>adicionar foto</span>
-    </div>
-    <img id="fotoPreview" class="foto-passe"
-         src="" alt="Foto" style="display:none;">
-    <div class="foto-btn-trocar" title="Trocar foto"
-         onclick="document.getElementById('inputFoto').click()"
-         style="display:none;" id="fotoBtnTrocar">
-        <i class="fas fa-camera"></i>
-    </div>
-    
-    {{-- 🔥 INPUT CORRIGIDO - opacity 0 em vez de display:none --}}
-    <div style="position: relative; width: 100%; height: 0; overflow: visible;">
-        <input type="file" id="inputFoto" name="foto" accept="image/*"
-               style="position: absolute; top: 0; left: 0; opacity: 0; 
-                      width: 100%; height: 100%; cursor: pointer; z-index: 10;"
-               onchange="previewFoto(this)">
-    </div>
-</div>
+            <div class="foto-passe-wrap">
+                <div class="foto-passe-placeholder" id="fotoPlaceholder"
+                     onclick="document.getElementById('inputFoto').click()">
+                    <i class="fas fa-camera"></i>
+                    <span>Clique para<br>adicionar foto</span>
+                </div>
+                <img id="fotoPreview" class="foto-passe"
+                     src="" alt="Foto" style="display:none;">
+                <div class="foto-btn-trocar" title="Trocar foto"
+                     onclick="document.getElementById('inputFoto').click()"
+                     style="display:none;" id="fotoBtnTrocar">
+                    <i class="fas fa-camera"></i>
+                </div>
+
+                {{-- 🔥 FIX: atributo form="formPedido" associa este input ao form
+                     mesmo estando fora dele no DOM --}}
+                <div style="position: relative; width: 100%; height: 0; overflow: visible;">
+                    <input type="file" id="inputFoto" name="foto" accept="image/*"
+                           form="formPedido"
+                           style="position: absolute; top: 0; left: 0; opacity: 0;
+                                  width: 100%; height: 100%; cursor: pointer; z-index: 10;"
+                           onchange="previewFoto(this)">
+                </div>
+            </div>
 
             {{-- Dados em tempo real --}}
             <div class="preview-info">
@@ -184,57 +186,57 @@
                             <option value="">Selecione o país...</option>
                             @php
                                 $nacionalidades = [
-                                    'Angolana' => 'Angola',
-                                    'Argelina' => 'Argélia',
-                                    'Beninense' => 'Benim',
-                                    'Botsuanesa' => 'Botsuana',
-                                    'Burquinabê' => 'Burquina Faso',
-                                    'Burundiana' => 'Burundi',
-                                    'Cabo-verdiana' => 'Cabo Verde',
-                                    'Camaronesa' => 'Camarões',
-                                    'Comorense' => 'Comores',
-                                    'Congolesa' => 'Congo (República do)',
-                                    'Congolesa (RDC)' => 'Congo (República Democrática)',
-                                    'Costa-marfinense' => 'Costa do Marfim',
-                                    'Djiboutiana' => 'Djibouti',
-                                    'Egípcia' => 'Egipto',
-                                    'Eritreia' => 'Eritreia',
-                                    'Essuatinesa' => 'Essuatíni',
-                                    'Etíope' => 'Etiópia',
-                                    'Gabonesa' => 'Gabão',
-                                    'Gambiana' => 'Gâmbia',
-                                    'Ganesa' => 'Gana',
-                                    'Guineense' => 'Guiné',
-                                    'Guinéu-equatoriana' => 'Guiné Equatorial',
-                                    'Guineense-bissauense' => 'Guiné-Bissau',
-                                    'Keniana' => 'Quénia',
-                                    'Lesotiana' => 'Lesoto',
-                                    'Liberiana' => 'Libéria',
-                                    'Líbia' => 'Líbia',
-                                    'Malgaxe' => 'Madagáscar',
-                                    'Malauiana' => 'Maláui',
-                                    'Maliana' => 'Mali',
-                                    'Marroquina' => 'Marrocos',
-                                    'Mauritana' => 'Mauritânia',
-                                    'Mauriciana' => 'Maurícia',
-                                    'Moçambicana' => 'Moçambique',
-                                    'Namibiana' => 'Namíbia',
-                                    'Nigerina' => 'Níger',
-                                    'Nigeriana' => 'Nigéria',
-                                    'Ruandesa' => 'Ruanda',
-                                    'São-tomense' => 'São Tomé e Príncipe',
-                                    'Senegalesa' => 'Senegal',
-                                    'Serra-leonesa' => 'Serra Leoa',
-                                    'Somali' => 'Somália',
-                                    'Sul-africana' => 'África do Sul',
-                                    'Sul-sudanesa' => 'Sudão do Sul',
-                                    'Sudanesa' => 'Sudão',
-                                    'Tanzaniana' => 'Tanzânia',
-                                    'Togolesa' => 'Togo',
-                                    'Tunisina' => 'Tunísia',
-                                    'Ugandesa' => 'Uganda',
-                                    'Zambiana' => 'Zâmbia',
-                                    'Zimbabueana' => 'Zimbabué',
+                                    'Angolana'              => 'Angola',
+                                    'Argelina'              => 'Argélia',
+                                    'Beninense'             => 'Benim',
+                                    'Botsuanesa'            => 'Botsuana',
+                                    'Burquinabê'            => 'Burquina Faso',
+                                    'Burundiana'            => 'Burundi',
+                                    'Cabo-verdiana'         => 'Cabo Verde',
+                                    'Camaronesa'            => 'Camarões',
+                                    'Comorense'             => 'Comores',
+                                    'Congolesa'             => 'Congo (República do)',
+                                    'Congolesa (RDC)'       => 'Congo (República Democrática)',
+                                    'Costa-marfinense'      => 'Costa do Marfim',
+                                    'Djiboutiana'           => 'Djibouti',
+                                    'Egípcia'               => 'Egipto',
+                                    'Eritreia'              => 'Eritreia',
+                                    'Essuatinesa'           => 'Essuatíni',
+                                    'Etíope'                => 'Etiópia',
+                                    'Gabonesa'              => 'Gabão',
+                                    'Gambiana'              => 'Gâmbia',
+                                    'Ganesa'                => 'Gana',
+                                    'Guineense'             => 'Guiné',
+                                    'Guinéu-equatoriana'    => 'Guiné Equatorial',
+                                    'Guineense-bissauense'  => 'Guiné-Bissau',
+                                    'Keniana'               => 'Quénia',
+                                    'Lesotiana'             => 'Lesoto',
+                                    'Liberiana'             => 'Libéria',
+                                    'Líbia'                 => 'Líbia',
+                                    'Malgaxe'               => 'Madagáscar',
+                                    'Malauiana'             => 'Maláui',
+                                    'Maliana'               => 'Mali',
+                                    'Marroquina'            => 'Marrocos',
+                                    'Mauritana'             => 'Mauritânia',
+                                    'Mauriciana'            => 'Maurícia',
+                                    'Moçambicana'           => 'Moçambique',
+                                    'Namibiana'             => 'Namíbia',
+                                    'Nigerina'              => 'Níger',
+                                    'Nigeriana'             => 'Nigéria',
+                                    'Ruandesa'              => 'Ruanda',
+                                    'São-tomense'           => 'São Tomé e Príncipe',
+                                    'Senegalesa'            => 'Senegal',
+                                    'Serra-leonesa'         => 'Serra Leoa',
+                                    'Somali'                => 'Somália',
+                                    'Sul-africana'          => 'África do Sul',
+                                    'Sul-sudanesa'          => 'Sudão do Sul',
+                                    'Sudanesa'              => 'Sudão',
+                                    'Tanzaniana'            => 'Tanzânia',
+                                    'Togolesa'              => 'Togo',
+                                    'Tunisina'              => 'Tunísia',
+                                    'Ugandesa'              => 'Uganda',
+                                    'Zambiana'              => 'Zâmbia',
+                                    'Zimbabueana'           => 'Zimbabué',
                                 ];
                                 $nacionalidadeSel = old('nacionalidade', 'Angolana');
                             @endphp
