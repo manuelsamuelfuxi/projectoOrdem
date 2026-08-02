@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\TipoDocumento;
 use App\Http\Controllers\Publico\HomeController;
 use App\Http\Controllers\Publico\PedidoController;
 use App\Http\Controllers\Publico\ConsultaController;
@@ -49,18 +50,45 @@ Route::get("/municipios/{provinciaId}", [MunicipioController::class, "porProvinc
 // =============================================
 Route::prefix("consulta")->name("consulta.")->group(function () {
     Route::get("/", [ConsultaController::class, "form"])->name("form");
-    Route::post("/", [ConsultaController::class, "consultar"])->name("consultar");
-    Route::get("/{id}/estado", [ConsultaController::class, "estado"])->name("estado")->whereNumber("id");
-    Route::get("/{id}/baixar-ficha-cobranca", [ConsultaController::class, "baixarFichaCobranca"])->name("baixar-ficha-cobranca")->whereNumber("id");
+
+    Route::post("/", [ConsultaController::class, "consultar"])
+        ->name("consultar")
+        ->middleware("throttle:public-query");
+
+    Route::get("/{uuid}/estado", [ConsultaController::class, "estado"])
+        ->name("estado")
+        ->where("uuid", "[0-9a-fA-F-]{36}")
+        ->middleware("throttle:public-query");
+
+    Route::get("/{uuid}/baixar-ficha-cobranca", [ConsultaController::class, "baixarFichaCobranca"])
+        ->name("baixar-ficha-cobranca")
+        ->where("uuid", "[0-9a-fA-F-]{36}")
+        ->middleware("throttle:public-query");
+
+    Route::get("/verificar", [ConsultaController::class, "verificarPorQrCode"])
+        ->name("verificar")
+        ->middleware("throttle:public-query");
 });
 
 // =============================================
 // UPLOAD DE COMPROVATIVO (APÓS CONSULTA)
 // =============================================
 Route::prefix("pedido")->name("pedido.")->group(function () {
-    Route::get("/{id}/upload-comprovativo", [ConsultaController::class, "formUpload"])->name("form-upload")->whereNumber("id");
-    Route::post("/{id}/enviar-comprovativo", [ConsultaController::class, "enviarComprovativo"])->name("enviar-comprovativo")->whereNumber("id");
-    Route::get("/{id}/baixar/{tipo}", [ConsultaController::class, "baixarDocumento"])->name("baixar-documento")->whereNumber("id")->middleware("signed");
+    Route::get("/{uuid}/upload-comprovativo", [ConsultaController::class, "formUpload"])
+        ->name("form-upload")
+        ->where("uuid", "[0-9a-fA-F-]{36}")
+        ->middleware("throttle:public-query");
+
+    Route::post("/{uuid}/enviar-comprovativo", [ConsultaController::class, "enviarComprovativo"])
+        ->name("enviar-comprovativo")
+        ->where("uuid", "[0-9a-fA-F-]{36}")
+        ->middleware("throttle:public-submit");
+
+    Route::get("/{uuid}/baixar/{tipo}", [ConsultaController::class, "baixarDocumento"])
+        ->name("baixar-documento")
+        ->where("uuid", "[0-9a-fA-F-]{36}")
+        ->whereIn("tipo", array_column(TipoDocumento::cases(), "value"))
+        ->middleware("signed");
 });
 
 // =============================================
@@ -80,4 +108,7 @@ Route::get("/legislacao", fn() => view("publico.legislacao"))->name("legislacao"
 // =============================================
 // PREVIEW DE DOCUMENTO (OPCIONAL)
 // =============================================
-Route::get("/pedido/preview/{tipo}", [PedidoController::class, "previewDocumento"])->name("pedido.preview");
+// Mesmo raciocínio: {tipo} restringido ao enum directamente na rota.
+Route::get("/pedido/preview/{tipo}", [PedidoController::class, "previewDocumento"])
+    ->name("pedido.preview")
+    ->whereIn("tipo", array_column(TipoDocumento::cases(), "value"));

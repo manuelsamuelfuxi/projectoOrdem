@@ -10,8 +10,11 @@ use App\Models\Funcao;
 use App\Models\Municipio;
 use App\Models\Pagamento;
 use App\Models\Provincia;
+use App\Enums\EstadoPedido;
+use App\Enums\TipoDocumento;
 use App\Http\Requests\Etapa1Request;
 use App\Http\Requests\Etapa2Request;
+use App\Http\Requests\Etapa3Request;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -48,19 +51,14 @@ class PedidoService
         return $request->validated();
     }
 
-    public function prepararEtapa3(Request $request): array
+    public function prepararEtapa3(Etapa3Request $request): array
     {
-        $validated = $request->validate([
-            'tipo_documento_upload' => 'required|string',
-            'arquivo'               => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
-        ]);
-
-        $tipo    = $validated['tipo_documento_upload'];
-        $arquivo = $validated['arquivo'];
+        $tipo    = $request->tipoDocumento(); // já validado e convertido para o enum na fronteira
+        $arquivo = $request->file('arquivo');
         $caminho = $arquivo->store('temp/uploads', 'public');
 
-        $documentos        = Session::get('documentos_enviados', []);
-        $documentos[$tipo] = [
+        $documentos               = Session::get('documentos_enviados', []);
+        $documentos[$tipo->value] = [
             'path'          => $caminho,
             'nome_original' => $arquivo->getClientOriginalName(),
             'tamanho'       => $arquivo->getSize(),
@@ -70,18 +68,18 @@ class PedidoService
         return $documentos;
     }
 
-    public function removerDocumento(string $tipo, array $documentos): array
+    public function removerDocumento(TipoDocumento $tipo, array $documentos): array
     {
-        if (!isset($documentos[$tipo])) {
+        if (!isset($documentos[$tipo->value])) {
             return [false, 'Documento não encontrado.'];
         }
 
-        $caminho = $documentos[$tipo]['path'];
+        $caminho = $documentos[$tipo->value]['path'];
         if (Storage::disk('public')->exists($caminho)) {
             Storage::disk('public')->delete($caminho);
         }
 
-        unset($documentos[$tipo]);
+        unset($documentos[$tipo->value]);
         Session::put('documentos_enviados', $documentos);
 
         return [true, 'Documento removido.'];
@@ -94,8 +92,7 @@ class PedidoService
 
     public function validarDocumentosObrigatorios(array $documentos): array
     {
-        $obrigatorios = ['bi', 'certificado_habilitacoes'];
-        $faltando     = array_diff($obrigatorios, array_keys($documentos));
+        $faltando = array_diff(TipoDocumento::obrigatorios(), array_keys($documentos));
 
         if (!empty($faltando)) {
             return [false, 'Ainda faltam documentos obrigatórios: ' . implode(', ', $faltando)];
@@ -177,13 +174,12 @@ $fotoUrl = $disk->url($fotoPath);
     /**
      * Formata a classe/ano de acordo com o nível académico para exibição.
      */
+    /**
+     * Formata a classe/ano de acordo com o nível académico para exibição.
+     */
     private function formatarClasse(string $nivel, string $classe): string
     {
-        return match ($nivel) {
-            'medio'    => $classe . 'ª Classe',
-            'superior' => str_replace('ano', 'º Ano', $classe),
-            default    => $classe,
-        };
+        return \App\Support\ClasseFormatter::formatar($nivel, $classe);
     }
 
     // =========================================================
@@ -234,7 +230,7 @@ $fotoUrl = $disk->url($fotoPath);
         if (isset($dadosEtapa1['foto_path'])) {
             $caminho = storage_path('app/public/' . $dadosEtapa1['foto_path']);
             if (file_exists($caminho)) {
-                $documentos['foto_identificacao'] = new UploadedFile(
+                $documentos[TipoDocumento::FOTO_IDENTIFICACAO->value] = new UploadedFile(
                     $caminho, 'foto_identificacao.jpg', 'image/jpeg', null, true
                 );
             }
@@ -254,12 +250,9 @@ $fotoUrl = $disk->url($fotoPath);
 
     private function garantirDocumentosObrigatorios(array $documentos, string $tipoDocumento): void
     {
-        // A foto de identificação é opcional — o campo não é obrigatório na etapa 1
-        // e é tratada separadamente em resolverFicheiros().
-        // Os únicos documentos obrigatórios para todos os tipos são BI e Certificado.
-        $obrigatorios = ['bi', 'certificado_habilitacoes'];
-
-        $faltando = array_diff($obrigatorios, array_keys($documentos));
+        // A lista de obrigatórios vive apenas em TipoDocumento::obrigatorios() —
+        // fonte única de verdade, derivada de isObrigatorio() em cada caso do enum.
+        $faltando = array_diff(TipoDocumento::obrigatorios(), array_keys($documentos));
 
         if (!empty($faltando)) {
             throw new \InvalidArgumentException(
@@ -309,7 +302,7 @@ $fotoUrl = $disk->url($fotoPath);
     private function salvarDocumentos(Application $pedido, array $documentos): void
     {
         foreach ($documentos as $tipo => $arquivo) {
-            if ($this->documentoDuplicado($arquivo)) {
+            if ($this->deveVerificarDuplicado($tipo) && $this->documentoDuplicado($arquivo)) {
                 Log::warning('Documento duplicado ignorado', [
                     'tipo'          => $tipo,
                     'original_name' => $arquivo->getClientOriginalName(),
@@ -318,6 +311,18 @@ $fotoUrl = $disk->url($fotoPath);
             }
             $this->guardarDocumento($pedido, $tipo, $arquivo);
         }
+    }
+
+    /**
+     * A foto de identificação fica isenta da verificação de duplicado:
+     * é normal e legítimo o mesmo candidato reenviar a mesma foto em
+     * pedidos diferentes. A verificação de hash global só faz sentido
+     * para documentos como BI ou certificados, onde um duplicado pode
+     * indicar uma tentativa de fraude.
+     */
+    private function deveVerificarDuplicado(string $tipo): bool
+    {
+        return $tipo !== TipoDocumento::FOTO_IDENTIFICACAO->value;
     }
 
     private function documentoDuplicado(UploadedFile $arquivo): bool
@@ -364,31 +369,76 @@ $fotoUrl = $disk->url($fotoPath);
     // EMISSÃO / REJEIÇÃO (Super Admin)
     // =========================================================
 
+    /**
+     * @throws \DomainException se o pedido não estiver num estado que permita
+     *         a emissão do documento (ex.: já emitido, rejeitado, ou ainda
+     *         não aprovado — race condition de duplo clique ou dois
+     *         super-admins a agir sobre o mesmo pedido em simultâneo).
+     */
     public function aprovarEmissao(Application $pedido): void
     {
-        DB::beginTransaction();
-        try {
-            $pedido->update(['status' => 'documento_emitido', 'document_issued_at' => now()]);
-            DB::commit();
-            Log::info('Documento emitido', ['pedido_id' => $pedido->id, 'por' => auth()->id()]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Erro ao emitir documento', ['pedido_id' => $pedido->id, 'error' => $e->getMessage()]);
-            throw $e;
+        DB::transaction(function () use ($pedido) {
+            // Lock pessimista: relê o pedido com FOR UPDATE, garantindo que
+            // duas emissões concorrentes do mesmo pedido não passam ambas
+            // pela verificação de estado antes de qualquer uma escrever.
+            $pedidoLocked = Application::whereKey($pedido->id)->lockForUpdate()->firstOrFail();
+
+            $this->garantirTransicaoValida($pedidoLocked, EstadoPedido::DOCUMENTO_EMITIDO);
+
+            $pedidoLocked->update([
+                'status'              => EstadoPedido::DOCUMENTO_EMITIDO->value,
+                'document_issued_at'  => now(),
+            ]);
+
+            Log::info('Documento emitido', [
+                'pedido_id' => $pedidoLocked->id,
+                'por'       => auth()->id(),
+            ]);
+        });
+    }
+
+    /**
+     * @throws \DomainException se o pedido não estiver num estado que permita
+     *         a rejeição (ex.: já emitido, já rejeitado, ou cancelado).
+     */
+    public function rejeitar(Application $pedido, string $motivo): void
+    {
+        DB::transaction(function () use ($pedido, $motivo) {
+            $pedidoLocked = Application::whereKey($pedido->id)->lockForUpdate()->firstOrFail();
+
+            $this->garantirTransicaoValida($pedidoLocked, EstadoPedido::REJEITADO);
+
+            $pedidoLocked->update([
+                'status'       => EstadoPedido::REJEITADO->value,
+                'admin_notes'  => $motivo,
+            ]);
+
+            Log::warning('Pedido rejeitado', [
+                'pedido_id' => $pedidoLocked->id,
+                'por'       => auth()->id(),
+                'motivo'    => $motivo,
+            ]);
+        });
+    }
+
+    /**
+     * Fonte única de verdade para validação de transição: usa sempre
+     * EstadoPedido::podeTransitarPara(), nunca comparações de string soltas.
+     * Isto garante que qualquer alteração futura às regras do fluxo (ex.:
+     * permitir cancelamento em mais estados) só precisa de ser feita no
+     * enum, e é automaticamente respeitada aqui.
+     */
+    private function garantirTransicaoValida(Application $pedido, EstadoPedido $destino): void
+    {
+        $estadoAtual = EstadoPedido::from($pedido->status);
+
+        if (!$estadoAtual->podeTransitarPara($destino)) {
+            throw new \DomainException(
+                "Não é possível concluir esta ação: o pedido está em '{$estadoAtual->rotulo()}' " .
+                "e não pode transitar para '{$destino->rotulo()}'."
+            );
         }
     }
 
-    public function rejeitar(Application $pedido, string $motivo): void
-    {
-        DB::beginTransaction();
-        try {
-            $pedido->update(['status' => 'rejeitado', 'admin_notes' => $motivo]);
-            DB::commit();
-            Log::info('Pedido rejeitado', ['pedido_id' => $pedido->id, 'por' => auth()->id(), 'motivo' => $motivo]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Erro ao rejeitar pedido', ['pedido_id' => $pedido->id, 'error' => $e->getMessage()]);
-            throw $e;
-        }
-    }
+    
 }

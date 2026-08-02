@@ -41,18 +41,14 @@ class ConsultaService
     // BUSCA POR ID
     // =========================================================
 
-    public function buscarPedido(int $id): Pedido
+    public function buscarPedido(string $referenceUuid): Pedido
     {
-        return Pedido::findOrFail($id);
+        return Pedido::where('reference_uuid', $referenceUuid)->firstOrFail();
     }
 
-    // =========================================================
-    // DOCUMENTOS
-    // =========================================================
-
-    public function baixarDocumento(int $id, string $tipo): BinaryFileResponse
+    public function baixarDocumento(string $referenceUuid, string $tipo): BinaryFileResponse
     {
-        $pedido = $this->buscarPedido($id);
+        $pedido = $this->buscarPedido($referenceUuid);
 
         $documento = $pedido->documentos()->where('type', $tipo)->firstOrFail();
 
@@ -69,9 +65,9 @@ class ConsultaService
     // FICHA DE COBRANÇA PDF
     // =========================================================
 
-    public function baixarFichaCobranca(int $id): Response
+    public function baixarFichaCobranca(string $referenceUuid): Response
     {
-        $pedido = $this->buscarPedido($id);
+        $pedido = $this->buscarPedido($referenceUuid);
 
         $logoBase64 = $this->carregarLogoBase64();
 

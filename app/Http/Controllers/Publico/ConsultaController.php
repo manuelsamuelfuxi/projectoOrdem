@@ -14,15 +14,13 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ConsultaController extends Controller
 {
-    public function __construct(
-        private ConsultaService $consultaService,
-        private PagamentoService $pagamentoService,
-    ) {}
 
-    public function form(): View
-    {
-        return view("publico.consulta.form");
-    }
+
+    public function __construct(
+    private ConsultaService $consultaService,
+    private PagamentoService $pagamentoService,
+) {}
+
 
     public function consultar(ConsultarPedidoRequest $request): View|RedirectResponse
     {
@@ -34,41 +32,41 @@ class ConsultaController extends Controller
                 ->with("error", "Nenhum pedido encontrado com o número de BI: " . $request->bi_number);
         }
 
-        return redirect()->route("consulta.estado", $resultado['pedido']->id);
+        return redirect()->route("consulta.estado", $resultado['pedido']->reference_uuid);
     }
 
-    public function estado(int $id): View
+    public function estado(string $uuid): View
     {
-        $pedido = $this->consultaService->buscarPedido($id);
+        $pedido = $this->consultaService->buscarPedido($uuid);
 
         return view("publico.consulta.estado", compact("pedido"));
     }
 
-    public function formUpload(int $id): View
+    public function formUpload(string $uuid): View
     {
-        $pedido = $this->consultaService->buscarPedido($id);
+        $pedido = $this->consultaService->buscarPedido($uuid);
 
         return view("publico.consulta.upload-comprovativo", compact("pedido"));
     }
 
-    public function enviarComprovativo(EnviarComprovativoRequest $request, int $id): RedirectResponse
+    public function enviarComprovativo(EnviarComprovativoRequest $request, string $uuid): RedirectResponse
     {
-        $pedido = $this->consultaService->buscarPedido($id);
+        $pedido = $this->consultaService->buscarPedido($uuid);
 
         $this->pagamentoService->enviarComprovativo($pedido, $request->validated());
 
         return redirect()
-            ->route("consulta.estado", $id)
+            ->route("consulta.estado", $uuid)
             ->with("success", "Comprovativo enviado com sucesso! Aguarde a confirmação.");
     }
 
-    public function baixarDocumento(int $id, string $tipo): BinaryFileResponse
+    public function baixarDocumento(string $uuid, string $tipo): BinaryFileResponse
     {
-        return $this->consultaService->baixarDocumento($id, $tipo);
+        return $this->consultaService->baixarDocumento($uuid, $tipo);
     }
 
-    public function baixarFichaCobranca(int $id): Response
+    public function baixarFichaCobranca(string $uuid): Response
     {
-        return $this->consultaService->baixarFichaCobranca($id);
+        return $this->consultaService->baixarFichaCobranca($uuid);
     }
 }

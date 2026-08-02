@@ -58,7 +58,7 @@
         display: inline-flex; align-items: center; gap: 5px;
         font-size: 12px; font-weight: 500;
         background: #16a34a; color: white;
-        padding: 6px 14px; border-radius: 6px;
+        padding: 6px 14px;
         border: none; cursor: pointer;
         text-decoration: none;
         transition: opacity 0.15s;
@@ -69,7 +69,7 @@
         display: inline-flex; align-items: center; gap: 5px;
         font-size: 12px; font-weight: 500;
         background: white; color: #dc2626;
-        padding: 6px 14px; border-radius: 6px;
+        padding: 6px 14px;
         border: 1px solid #fecaca; cursor: pointer;
         transition: background 0.15s;
     }
@@ -91,14 +91,14 @@
     }
     .modal-overlay.show { display: flex; }
     .modal-box {
-        background: white; border-radius: 10px;
+        background: white;
         padding: 28px; width: 420px; max-width: 90vw;
     }
     .modal-title { font-size: 15px; font-weight: 500; color: #0f172a; margin-bottom: 6px; }
     .modal-desc  { font-size: 13px; color: #64748b; margin-bottom: 18px; }
     .modal-label { font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px; display: block; }
     .modal-textarea {
-        width: 100%; border: 1px solid #e2e8f0; border-radius: 6px;
+        width: 100%; border: 1px solid #e2e8f0;
         padding: 10px 12px; font-size: 13px; color: #0f172a;
         resize: vertical; min-height: 90px; outline: none;
         font-family: inherit;
@@ -106,16 +106,23 @@
     .modal-textarea:focus { border-color: #1d4ed8; }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
     .btn-cancelar {
-        padding: 8px 18px; border-radius: 6px;
+        padding: 8px 18px;
         border: 1px solid #e2e8f0; background: white;
         font-size: 13px; color: #334155; cursor: pointer;
     }
     .btn-confirmar-rejeitar {
-        padding: 8px 18px; border-radius: 6px;
+        padding: 8px 18px;
         border: none; background: #dc2626;
         font-size: 13px; color: white; cursor: pointer; font-weight: 500;
     }
     .btn-confirmar-rejeitar:hover { background: #b91c1c; }
+    .btn-confirmar-gerar {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 18px;
+        border: none; background: #16a34a;
+        font-size: 13px; color: white; cursor: pointer; font-weight: 500;
+    }
+    .btn-confirmar-gerar:hover { background: #15803d; }
 
     @media (max-width: 768px) {
         .data-table thead th:nth-child(3),
@@ -140,7 +147,7 @@
     <div class="data-card-header">
         <span style="display:flex; align-items:center; gap:8px;">
             <i class="fas fa-file-pdf" style="color:#16a34a;"></i>
-            Pedidos Aprovados — Prontos para Emissão
+            Pedidos com Pagamento Aprovado — Prontos para Emissão
             <span style="background:#f0fdf4; color:#16a34a; font-size:11px; font-weight:500; padding:2px 8px; border-radius:20px;">
                 {{ $pedidos->total() }} registo{{ $pedidos->total() !== 1 ? 's' : '' }}
             </span>
@@ -156,7 +163,7 @@
                 <th>Processo</th>
                 <th>Candidato</th>
                 <th>Tipo de Documento</th>
-                <th>Aprovado em</th>
+                <th>Pagamento Confirmado em</th>
                 <th>Acções</th>
             </tr>
         </thead>
@@ -171,31 +178,34 @@
                     </span>
                 </td>
                 <td style="color:#94a3b8; font-size:12px;">
-                    {{ $pedido->approved_at ? \Carbon\Carbon::parse($pedido->approved_at)->format('d/m/Y H:i') : '—' }}
+                    {{ $pedido->pagamento?->confirmed_at ? \Carbon\Carbon::parse($pedido->pagamento->confirmed_at)->format('d/m/Y H:i') : '—' }}
                 </td>
-                <td class="actions-cell">
-                    {{-- Botão Emitir --}}
-                    <form action="{{ route('super-admin.pedidos.aprovar-emissao', $pedido) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn-emitir"
-                            onclick="return confirm('Confirma a emissão do documento para {{ addslashes($pedido->full_name) }}?')">
-                            <i class="fas fa-file-pdf"></i> Emitir
-                        </button>
-                    </form>
+               {{-- Trecho alterado dentro de aprovados-financeiramente.blade.php — <td class="actions-cell"> --}}
+<td class="actions-cell">
+    {{-- Gerar Licença — abre a pré-visualização do PDF numa nova aba.
+         Não grava nada; a confirmação de emissão acontece dentro
+         dessa tela de preview, não aqui. --}}
+    <a href="{{ route('super-admin.licencas.preview', $pedido) }}"
+   target="_blank"
+   rel="noopener"
+   class="btn-emitir">
+    <i class="fas fa-file-pdf"></i> Gerar Licença
+</a>
 
-                    {{-- Botão Rejeitar --}}
-                    <button type="button" class="btn-rejeitar"
-                        onclick="abrirModalRejeitar({{ $pedido->id }}, '{{ addslashes($pedido->full_name) }}')">
-                        <i class="fas fa-times"></i> Rejeitar
-                    </button>
-                </td>
+    {{-- Botão Rejeitar --}}
+    <button type="button" class="btn-rejeitar"
+        data-url="{{ route('super-admin.pedidos.rejeitar', $pedido) }}"
+        onclick="abrirModalRejeitar(this.dataset.url, '{{ addslashes($pedido->full_name) }}')">
+        <i class="fas fa-times"></i> Rejeitar
+    </button>
+</td>
             </tr>
             @empty
             <tr>
                 <td colspan="5">
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>
-                        Nenhum pedido aprovado aguardando emissão de documento
+                        Nenhum pedido com pagamento aprovado a aguardar emissão de documento
                     </div>
                 </td>
             </tr>
@@ -210,6 +220,23 @@
     @endif
 </div>
 
+{{-- ===== MODAL GERAR LICENÇA ===== --}}
+<div class="modal-overlay" id="modalGerar">
+    <div class="modal-box">
+        <div class="modal-title">Gerar Licença</div>
+        <div class="modal-desc" id="modalGerarDesc">Tem a certeza desta ação?</div>
+        <form id="formGerar" method="POST">
+            @csrf
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar" onclick="fecharModalGerar()">Cancelar</button>
+                <button type="submit" class="btn-confirmar-gerar">
+                    <i class="fas fa-file-pdf"></i> Confirmar Geração
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {{-- ===== MODAL REJEITAR ===== --}}
 <div class="modal-overlay" id="modalRejeitar">
     <div class="modal-box">
@@ -218,7 +245,7 @@
         <form id="formRejeitar" method="POST">
             @csrf
             <label class="modal-label">Motivo da Rejeição *</label>
-            <textarea name="motivo" class="modal-textarea" placeholder="Descreve o motivo da rejeição..." required></textarea>
+            <textarea name="motivo" class="modal-textarea" placeholder="Descreve o motivo da rejeição..." required minlength="10" maxlength="500"></textarea>
             <div class="modal-actions">
                 <button type="button" class="btn-cancelar" onclick="fecharModalRejeitar()">Cancelar</button>
                 <button type="submit" class="btn-confirmar-rejeitar">
@@ -230,17 +257,30 @@
 </div>
 
 <script>
-    function abrirModalRejeitar(pedidoId, nome) {
+    // ── Modal: Gerar Licença ────────────────────────────────────────────
+    function abrirModalGerar(url, nome) {
+        document.getElementById('modalGerarDesc').textContent =
+            'Tem a certeza que deseja gerar a licença para ' + nome + '? Esta ação não pode ser desfeita.';
+        document.getElementById('formGerar').action = url;
+        document.getElementById('modalGerar').classList.add('show');
+    }
+    function fecharModalGerar() {
+        document.getElementById('modalGerar').classList.remove('show');
+    }
+    document.getElementById('modalGerar').addEventListener('click', function (e) {
+        if (e.target === this) fecharModalGerar();
+    });
+
+    // ── Modal: Rejeitar ──────────────────────────────────────────────────
+    function abrirModalRejeitar(url, nome) {
         document.getElementById('modalRejeitarDesc').textContent = 'Indica o motivo da rejeição para o pedido de ' + nome + '.';
-        document.getElementById('formRejeitar').action = '/super-admin/pedidos/' + pedidoId + '/rejeitar';
+        document.getElementById('formRejeitar').action = url;
         document.getElementById('modalRejeitar').classList.add('show');
     }
-
     function fecharModalRejeitar() {
         document.getElementById('modalRejeitar').classList.remove('show');
     }
-
-    document.getElementById('modalRejeitar').addEventListener('click', function(e) {
+    document.getElementById('modalRejeitar').addEventListener('click', function (e) {
         if (e.target === this) fecharModalRejeitar();
     });
 </script>

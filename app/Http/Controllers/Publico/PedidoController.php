@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Publico;
 
+use App\Enums\TipoDocumento;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Etapa1Request;
 use App\Http\Requests\Etapa2Request;
+use App\Http\Requests\Etapa3Request;
 use App\Services\PedidoService;
 use App\Services\ProvinciaMunicipioService;
 use App\Models\Curso;
@@ -46,21 +48,21 @@ class PedidoController extends Controller
     }
 
     public function salvarEtapa1(Etapa1Request $request)
-{
-    // DEBUG TEMPORÁRIO
-    \Log::channel('stderr')->info('[DEBUG Etapa1]', [
-        'has_file'     => $request->hasFile('foto'),
-        'files'        => array_keys($request->allFiles()),
-        'content_type' => $request->header('Content-Type'),
-    ]);
+    {
+        // DEBUG TEMPORÁRIO
+        Log::channel('stderr')->info('[DEBUG Etapa1]', [
+            'has_file'     => $request->hasFile('foto'),
+            'files'        => array_keys($request->allFiles()),
+            'content_type' => $request->header('Content-Type'),
+        ]);
 
-    $dados = $this->pedidoService->prepararEtapa1($request);
-    Session::put('dados_etapa1', $dados);
+        $dados = $this->pedidoService->prepararEtapa1($request);
+        Session::put('dados_etapa1', $dados);
 
-    return redirect()->route('pedido.dados-profissionais', [
-        'tipo' => $request->validated('tipo_documento'),
-    ]);
-}
+        return redirect()->route('pedido.dados-profissionais', [
+            'tipo' => $request->validated('tipo_documento'),
+        ]);
+    }
 
     // ── Etapa 2 ───────────────────────────────────────────────────────────────
 
@@ -121,7 +123,7 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function salvarEtapa3(Request $request)
+    public function salvarEtapa3(Etapa3Request $request)
     {
         if (!Session::has('dados_etapa1') || !Session::has('dados_etapa2')) {
             return response()->json(['error' => 'Complete as etapas anteriores primeiro.'], 400);
@@ -134,8 +136,14 @@ class PedidoController extends Controller
 
     public function removerDocumento(Request $request)
     {
+        $tipo = TipoDocumento::tryFrom($request->input('tipo'));
+
+        if ($tipo === null) {
+            return response()->json(['error' => 'Tipo de documento inválido.'], 422);
+        }
+
         [$sucesso, $mensagem] = $this->pedidoService->removerDocumento(
-            $request->input('tipo'),
+            $tipo,
             Session::get('documentos_enviados', [])
         );
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\PedidoController;
 use App\Http\Controllers\SuperAdmin\RelatorioController;
 use App\Http\Controllers\SuperAdmin\PerfilController;
+use App\Http\Controllers\SuperAdmin\LicencaController;
 
 Route::get("/dashboard", [DashboardController::class, "index"])->name("dashboard");
 
@@ -24,11 +25,17 @@ Route::prefix("admins")->name("admins.")->group(function () {
     Route::delete("/{admin}", [AdminController::class, "destroy"])->name("destroy");
 });
 
-// Pedidos
+// Pedidos (fluxo do pedido)
 Route::prefix("pedidos")->name("pedidos.")->group(function () {
     Route::get("/aprovados-financeiramente", [PedidoController::class, "aprovadosFinanceiramente"])->name("financeiramente-aprovados");
     Route::post("/{pedido}/aprovar-emissao", [PedidoController::class, "aprovarEmissao"])->name("aprovar-emissao");
-    Route::post('/{pedido}/rejeitar', [PedidoController::class, 'rejeitar'])->name('rejeitar');
+    Route::post("/{pedido}/rejeitar", [PedidoController::class, "rejeitar"])->name("rejeitar");
+});
+
+// Licenças (geração/visualização do documento em si)
+Route::prefix("licencas")->name("licencas.")->group(function () {
+    Route::get("/{pedido}/preview", [LicencaController::class, "preview"])->name("preview");
+    Route::get("/{pedido}/documento", [LicencaController::class, "visualizarDocumento"])->name("documento");
 });
 
 // Relatórios

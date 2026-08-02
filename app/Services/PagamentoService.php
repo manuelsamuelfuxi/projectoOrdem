@@ -64,13 +64,18 @@ class PagamentoService
     public function enviarComprovativo(Pedido $pedido, array $dados): void
     {
         DB::transaction(function () use ($pedido, $dados) {
-            $caminho   = $this->guardarFicheiroComprovativo($pedido, $dados);
-            $pagamento = $this->obterOuCriarPagamento($pedido);
+            // Lock pessimista no Pedido: impede que duas submissões concorrentes
+            // do mesmo comprovativo (ex. duplo-clique, ou duas abas abertas)
+            // criem dois registos de Pagamento em paralelo via obterOuCriarPagamento().
+            $pedidoLocked = Pedido::whereKey($pedido->id)->lockForUpdate()->firstOrFail();
+
+            $caminho   = $this->guardarFicheiroComprovativo($pedidoLocked, $dados);
+            $pagamento = $this->obterOuCriarPagamento($pedidoLocked);
 
             $this->registarComprovativo($pagamento, $caminho, $dados);
-            $this->atualizarEstadoPedidoAguardaComprovativo($pedido);
+            $this->atualizarEstadoPedidoAguardaComprovativo($pedidoLocked);
 
-            Log::info("Comprovativo enviado", ["pedido_id" => $pedido->id]);
+            Log::info("Comprovativo enviado", ["pedido_id" => $pedidoLocked->id]);
         });
     }
 
@@ -124,19 +129,41 @@ class PagamentoService
 
     // ─── Aprovação ────────────────────────────────────────────────────────────
 
+    /**
+     * @throws \DomainException se o pagamento já não estiver em 'proof_submitted'
+     *         (ex. segunda tentativa de aprovar, ou aprovação concorrente).
+     */
     public function aprovar(Pagamento $pagamento): void
     {
         DB::transaction(function () use ($pagamento) {
-            $this->confirmarPagamento($pagamento);
-            $this->atualizarEstadoPedidoConfirmado($pagamento);
-            $this->dispararEventoPagamentoConfirmado($pagamento);
+            // Lock pessimista: relê o pagamento com FOR UPDATE, garantindo que
+            // duas aprovações concorrentes do mesmo registo não passam ambas
+            // pela verificação de estado antes de qualquer uma escrever.
+            $pagamentoLocked = Pagamento::whereKey($pagamento->id)->lockForUpdate()->firstOrFail();
+
+            $this->garantirPagamentoPendente($pagamentoLocked);
+
+            $pedidoLocked = Pedido::whereKey($pagamentoLocked->application_id)->lockForUpdate()->firstOrFail();
+
+            $this->confirmarPagamento($pagamentoLocked);
+            $this->atualizarEstadoPedidoConfirmado($pedidoLocked);
+            $this->dispararEventoPagamentoConfirmado($pedidoLocked);
 
             Log::info("Pagamento aprovado", [
-                "pagamento_id"   => $pagamento->id,
-                "pedido_id"      => $pagamento->pedido->id,
+                "pagamento_id"   => $pagamentoLocked->id,
+                "pedido_id"      => $pedidoLocked->id,
                 "confirmado_por" => auth()->id(),
             ]);
         });
+    }
+
+    private function garantirPagamentoPendente(Pagamento $pagamento): void
+    {
+        if ($pagamento->status !== 'proof_submitted') {
+            throw new \DomainException(
+                "Este pagamento já foi processado anteriormente (estado actual: {$pagamento->status})."
+            );
+        }
     }
 
     private function confirmarPagamento(Pagamento $pagamento): void
@@ -148,27 +175,36 @@ class PagamentoService
         ]);
     }
 
-    private function atualizarEstadoPedidoConfirmado(Pagamento $pagamento): void
+    private function atualizarEstadoPedidoConfirmado(Pedido $pedido): void
     {
-        $pagamento->pedido->atualizarStatus(EstadoPedido::PAGAMENTO_CONFIRMADO, auth()->user());
+        $pedido->atualizarStatus(EstadoPedido::PAGAMENTO_CONFIRMADO, auth()->user());
     }
 
-    private function dispararEventoPagamentoConfirmado(Pagamento $pagamento): void
+    private function dispararEventoPagamentoConfirmado(Pedido $pedido): void
     {
-        event(new PagamentoConfirmado($pagamento->pedido));
+        event(new PagamentoConfirmado($pedido));
     }
 
     // ─── Rejeição ─────────────────────────────────────────────────────────────
 
+    /**
+     * @throws \DomainException se o pagamento já não estiver em 'proof_submitted'.
+     */
     public function rejeitar(Pagamento $pagamento, string $motivo): void
     {
         DB::transaction(function () use ($pagamento, $motivo) {
-            $this->registarRejeicao($pagamento, $motivo);
-            $this->atualizarEstadoPedidoRejeitado($pagamento, $motivo);
+            $pagamentoLocked = Pagamento::whereKey($pagamento->id)->lockForUpdate()->firstOrFail();
+
+            $this->garantirPagamentoPendente($pagamentoLocked);
+
+            $pedidoLocked = Pedido::whereKey($pagamentoLocked->application_id)->lockForUpdate()->firstOrFail();
+
+            $this->registarRejeicao($pagamentoLocked, $motivo);
+            $this->atualizarEstadoPedidoRejeitado($pedidoLocked, $motivo);
 
             Log::warning("Pagamento rejeitado", [
-                "pagamento_id"  => $pagamento->id,
-                "pedido_id"     => $pagamento->pedido->id,
+                "pagamento_id"  => $pagamentoLocked->id,
+                "pedido_id"     => $pedidoLocked->id,
                 "motivo"        => $motivo,
                 "rejeitado_por" => auth()->id(),
             ]);
@@ -183,9 +219,9 @@ class PagamentoService
         ]);
     }
 
-    private function atualizarEstadoPedidoRejeitado(Pagamento $pagamento, string $motivo): void
+    private function atualizarEstadoPedidoRejeitado(Pedido $pedido, string $motivo): void
     {
-        $pagamento->pedido->atualizarStatus(EstadoPedido::NAO_PAGO, auth()->user(), [
+        $pedido->atualizarStatus(EstadoPedido::NAO_PAGO, auth()->user(), [
             "motivo_rejeicao" => $motivo,
         ]);
     }

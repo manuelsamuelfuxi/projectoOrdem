@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Concerns\GeraDadosSubmissao;
 use App\Enums\EstadoPedido;
 use App\Events\PagamentoConfirmado;
 use App\Events\PedidoAprovado;
@@ -12,7 +13,7 @@ use App\Events\DocumentoEmitido;
 
 class Pedido extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, GeraDadosSubmissao;
 
     protected $table = 'applications';
 
@@ -65,25 +66,6 @@ class Pedido extends Model
         'document_issued_at'          => 'datetime',
         'status'                      => EstadoPedido::class,
     ];
-
-    // ── Boot ──────────────────────────────────────────────────────────────────
-
-    protected static function booted(): void
-    {
-        static::creating(function ($pedido) {
-            $pedido->process_number = $pedido->process_number ?? self::gerarNumeroProcesso();
-            $pedido->submitted_at   = $pedido->submitted_at   ?? now();
-        });
-    }
-
-    protected static function gerarNumeroProcesso(): string
-    {
-        $ano    = now()->year;
-        $ultimo = self::whereYear('created_at', $ano)->max('process_number');
-        $numero = $ultimo ? (int) explode('/', $ultimo)[1] + 1 : 1;
-
-        return sprintf('%d/%05d', $ano, $numero);
-    }
 
     // ── Relacionamentos — Normalização ────────────────────────────────────────
 

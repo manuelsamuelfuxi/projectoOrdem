@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class AprovarPagamentoRequest extends FormRequest
 {
@@ -14,19 +13,11 @@ class AprovarPagamentoRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'acao' => ['required', Rule::in(['aprovar', 'rejeitar'])],
-            'motivo_rejeicao' => 'required_if:acao,rejeitar|string|max:500',
-            'observacoes' => 'nullable|string|max:1000',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'acao.required' => 'É necessário aprovar ou rejeitar o pagamento.',
-            'acao.in' => 'Acção inválida.',
-            'motivo_rejeicao.required_if' => 'É necessário fornecer uma justificativa para a rejeição.',
-        ];
+        // A rota já implica a acção (POST /admin/pagamentos/{pagamento}/aprovar).
+        // Não há nenhum dado adicional do formulário a validar aqui — só a
+        // autorização acima importa. O campo 'acao' anterior nunca era enviado
+        // pelo Blade (o form de aprovar só envia @csrf), pelo que a validação
+        // falhava sempre com 422 antes de chegar ao Service.
+        return [];
     }
 }
