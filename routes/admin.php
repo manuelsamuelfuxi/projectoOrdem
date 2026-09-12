@@ -22,6 +22,10 @@ Route::put("/perfil/senha", [PerfilController::class, "atualizarSenha"])->name("
 Route::prefix("pedidos")->name("pedidos.")->group(function () {
     Route::get("/", [PedidoController::class, "index"])->name("index");
     Route::get("/{pedido}", [PedidoController::class, "show"])->name("show");
+
+    // NOVO
+    Route::post("/{pedido}/reprocessar-emissao", [PedidoController::class, "reprocessarEmissao"])
+        ->name("reprocessar-emissao");
 });
 
 

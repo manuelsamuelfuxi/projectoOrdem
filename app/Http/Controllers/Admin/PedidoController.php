@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pedido;
+use App\Enums\EstadoPedido;
+use App\Models\Application;
+use App\Services\EmissaoLicencaService;
 
 class PedidoController extends Controller
 {
@@ -25,4 +28,5 @@ class PedidoController extends Controller
         
         return view("admin.pedidos.documentos", compact("pedido", "documentos"));
     }
+
 }

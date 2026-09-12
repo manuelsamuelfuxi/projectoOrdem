@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AprovarPagamentoRequest;
 use App\Models\Pagamento;
-use App\Services\PagamentoService;
+use App\Services\Admin\PagamentoService;
 
 class PagamentoController extends Controller
 {
@@ -18,14 +18,20 @@ class PagamentoController extends Controller
         return view("admin.pagamentos.pendentes", compact("pagamentos"));
     }
 
-    public function aprovar(AprovarPagamentoRequest $request, Pagamento $pagamento)
-    {
+   public function aprovar(AprovarPagamentoRequest $request, Pagamento $pagamento)
+{
+    try {
         $this->pagamentoService->aprovar($pagamento);
-
+    } catch (\DomainException $e) {
         return redirect()
             ->route("admin.pagamentos.pendentes")
-            ->with("success", "Pagamento aprovado com sucesso!");
+            ->with("error", $e->getMessage());
     }
+
+    return redirect()
+        ->route("admin.pagamentos.pendentes")
+        ->with("success", "Pagamento aprovado com sucesso! O pedido segue agora para revisão do super-admin.");
+}
 
     public function rejeitar(AprovarPagamentoRequest $request, Pagamento $pagamento)
     {

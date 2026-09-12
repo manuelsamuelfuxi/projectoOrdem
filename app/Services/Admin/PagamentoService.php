@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Admin;
 
 use App\Models\ConfiguracaoPagamento;
 use App\Models\Pedido;
@@ -64,9 +64,6 @@ class PagamentoService
     public function enviarComprovativo(Pedido $pedido, array $dados): void
     {
         DB::transaction(function () use ($pedido, $dados) {
-            // Lock pessimista no Pedido: impede que duas submissões concorrentes
-            // do mesmo comprovativo (ex. duplo-clique, ou duas abas abertas)
-            // criem dois registos de Pagamento em paralelo via obterOuCriarPagamento().
             $pedidoLocked = Pedido::whereKey($pedido->id)->lockForUpdate()->firstOrFail();
 
             $caminho   = $this->guardarFicheiroComprovativo($pedidoLocked, $dados);
@@ -84,13 +81,6 @@ class PagamentoService
         return $dados["comprovativo"]->store("comprovativos/{$pedido->id}", "private");
     }
 
-    /**
-     * Obtém o pagamento existente ou cria um novo com o valor lido da BD.
-     *
-     * SEGURANÇA: o valor nunca é hardcoded — vem de ConfiguracaoPagamento.
-     * Se o tipo de documento não tiver configuração activa, lança
-     * ModelNotFoundException e a transacção faz rollback automaticamente.
-     */
     private function obterOuCriarPagamento(Pedido $pedido): Pagamento
     {
         if ($pedido->pagamento) {
@@ -130,15 +120,16 @@ class PagamentoService
     // ─── Aprovação ────────────────────────────────────────────────────────────
 
     /**
-     * @throws \DomainException se o pagamento já não estiver em 'proof_submitted'
-     *         (ex. segunda tentativa de aprovar, ou aprovação concorrente).
+     * Aprova o pagamento e transita o pedido para PAGAMENTO_CONFIRMADO.
+     * A emissão do documento NÃO acontece aqui — é uma decisão separada do
+     * Super-Admin, feita na página "Pedidos Aprovados Financeiramente"
+     * (SuperAdmin\PedidoController::aprovarEmissao).
+     *
+     * @throws \DomainException se o pagamento já não estiver em 'proof_submitted'.
      */
     public function aprovar(Pagamento $pagamento): void
     {
         DB::transaction(function () use ($pagamento) {
-            // Lock pessimista: relê o pagamento com FOR UPDATE, garantindo que
-            // duas aprovações concorrentes do mesmo registo não passam ambas
-            // pela verificação de estado antes de qualquer uma escrever.
             $pagamentoLocked = Pagamento::whereKey($pagamento->id)->lockForUpdate()->firstOrFail();
 
             $this->garantirPagamentoPendente($pagamentoLocked);
@@ -187,9 +178,6 @@ class PagamentoService
 
     // ─── Rejeição ─────────────────────────────────────────────────────────────
 
-    /**
-     * @throws \DomainException se o pagamento já não estiver em 'proof_submitted'.
-     */
     public function rejeitar(Pagamento $pagamento, string $motivo): void
     {
         DB::transaction(function () use ($pagamento, $motivo) {

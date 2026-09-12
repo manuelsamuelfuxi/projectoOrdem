@@ -65,6 +65,15 @@
                 <div class="servico-link">Solicitar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
             </a>
 
+            <a href="{{ route('pedido.carteira.form') }}" class="servico-card">
+                <div class="servico-icone" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="servico-titulo">Carteira Profissional</div>
+                <div class="servico-desc">Solicite a emissão da sua carteira profissional como membro da Ordem.</div>
+                <div class="servico-link">Solicitar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
+            </a>
+
             <a href="{{ route('consulta.form') }}" class="servico-card">
                 <div class="servico-icone" style="background:linear-gradient(135deg,#0c4a8b,#1a6acc);">
                     <i class="fas fa-search"></i>
@@ -74,15 +83,16 @@
                 <div class="servico-link">Consultar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
             </a>
 
-            <a href="{{ route('login') }}" class="servico-card">
+            <a href="{{ route('pedido.cartao-membro.form') }}" class="servico-card">
                 <div class="servico-icone" style="background:linear-gradient(135deg,#15803d,#16a34a);">
                     <i class="fas fa-user-check"></i>
                 </div>
-                <div class="servico-titulo">Área de Membro</div>
-                <div class="servico-desc">Aceda à sua área pessoal, gira os seus pedidos e documentos em qualquer lugar.</div>
-                <div class="servico-link">Entrar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
+                <div class="servico-titulo">Cartão de Membro</div>
+                <div class="servico-desc">Solicite a emissão do seu cartão de membro efectivo da Ordem.</div>
+                <div class="servico-link">Solicitar <i class="fas fa-arrow-right" style="font-size:11px;"></i></div>
             </a>
         </div>
+    </div>
     </div>
 </section>
 

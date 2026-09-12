@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Licenca;
 
 use App\Enums\TipoDocumento;
 use App\Models\Application;
@@ -10,12 +10,8 @@ class LicencaDadosService
 {
     /**
      * Única responsabilidade: transformar um Application num array de
-     * dados já formatados e prontos para a view do PDF. Nenhuma lógica de
-     * renderização de PDF ou de QR code vive aqui.
+     * dados já formatados e prontos para a view do PDF da Licença.
      */
-
-    private const CATEGORIA_PADRAO = 'Téc. Diagnóstico Terapêutica 2ª Classe';
-
     public function prepararDados(Application $pedido): array
     {
         $validadeAte = $pedido->professional_license_expiry
@@ -23,12 +19,9 @@ class LicencaDadosService
 
         return [
             'nomeCompleto'   => $pedido->full_name,
-            'categoria'      => self::CATEGORIA_PADRAO,
-            'curso'          => $pedido->curso->nome ?? '',
-            'biNumero'       => $pedido->bi_number,
-            'funcao'         => $pedido->funcao->nome ?? 'Membro efectivo',
+            'curso'          => $this->curso($pedido),
+            'escola'         => $pedido->institution,
             'nacionalidade'  => $pedido->nationality,
-            'provincia'      => $pedido->provincia->nome ?? '',
             'numeroProcesso' => $pedido->process_number,
             'validadeAte'    => $validadeAte->format('d/m/Y'),
             'urlVerificacao' => $this->urlVerificacao($pedido),
@@ -36,12 +29,12 @@ class LicencaDadosService
         ];
     }
 
-    private function categoria(Application $pedido): string
+    private function curso(Application $pedido): string
     {
         $curso  = $pedido->curso->nome ?? '';
         $classe = $pedido->classe_label ?? '';
 
-        return trim("Téc. {$curso} {$classe}");
+        return trim("{$curso}/ {$classe}");
     }
 
     private function urlVerificacao(Application $pedido): string
@@ -49,11 +42,6 @@ class LicencaDadosService
         return rtrim(config('app.url'), '/') . '/verificar-licenca/' . $pedido->reference_uuid;
     }
 
-    /**
-     * A foto é guardada como Documento (tipo foto_identificacao), não como
-     * coluna da Application — por isso vai buscar-se pela relação
-     * documentos(). Devolve null se não existir; a view trata esse caso.
-     */
     private function fotoBase64(Application $pedido): ?string
     {
         $documento = $pedido->documentos()

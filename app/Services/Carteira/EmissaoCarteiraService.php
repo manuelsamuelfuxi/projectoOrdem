@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Carteira;
 
 use App\Models\Application;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Publico\PedidoService;
 
-class EmissaoLicencaService
+class EmissaoCarteiraService
 {
     public function __construct(
-        private readonly LicencaDadosService $dadosService,
-        private readonly LicencaPdfService $pdfService,
+        private readonly CarteiraDadosService $dadosService,
+        private readonly CarteiraPdfService $pdfService,
         private readonly PedidoService $pedidoService,
     ) {}
 

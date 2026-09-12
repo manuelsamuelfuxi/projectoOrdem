@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\SuperAdmin;
 
 use App\Models\User;
 use App\Models\Application;

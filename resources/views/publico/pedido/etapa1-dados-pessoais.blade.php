@@ -1,6 +1,11 @@
 @extends("layouts.app")
 
-@section("title", "Pedido de " . ($tipoDocumento === "carteira" ? "Carteira Profissional" : "Licença Profissional") . " — Passo 1 de 4")
+@section("title", "Pedido de " . match($tipoDocumento) {
+    'carteira' => 'Carteira Profissional',
+    'licenca' => 'Licença Profissional',
+    'cartao_membro' => 'Cartão de Membro',
+    default => 'Documento',
+} . " — Passo 1 de 4")
 
 @section("content")
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Services\SuperAdminDashboardService;
+use App\Services\SuperAdmin\SuperAdminDashboardService;
 
 class DashboardController extends Controller
 {

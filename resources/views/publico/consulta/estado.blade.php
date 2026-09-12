@@ -255,13 +255,13 @@
                         </button>
                     @endif
 
-                    @if(in_array($statusVal, ['aprovado', 'documento_emitido']))
-                        <a href="#" class="btn-acao btn-download">
-                            <i class="fas fa-download" aria-hidden="true"></i> Baixar Documento
-                        </a>
-                    @endif
+                    @if($statusVal === 'documento_emitido')
+    <a href="{{ route('consulta.baixar-carteira', $pedido->reference_uuid) }}" class="btn-acao btn-download">
+        <i class="fas fa-download" aria-hidden="true"></i> Baixar Carteira Profissional
+    </a>
+@endif
 
-                    <a href="{{ route('consulta.baixar-ficha-cobranca', $pedido->id) }}"
+                    <a href="{{ route('consulta.baixar-ficha-cobranca', $pedido->reference_uuid) }}"
                        class="btn-acao btn-download">
                         <i class="fas fa-file-pdf" aria-hidden="true"></i> Baixar Ficha de Cobrança
                     </a>
@@ -297,7 +297,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times" aria-hidden="true"></i> Cancelar
                 </button>
-                <a href="{{ route('pedido.form-upload', $pedido->id) }}" class="btn btn-warning">
+                <a href="{{ route('pedido.form-upload', $pedido->reference_uuid) }}" class="btn btn-warning">
                     <i class="fas fa-sync-alt" aria-hidden="true"></i> Sim, substituir
                 </a>
             </div>
@@ -313,6 +313,7 @@
 
     const btnAbrirModal = document.getElementById('btn-abrir-modal');
     const jaEnviou      = {{ $jaEnviouComprovativo ? 'true' : 'false' }};
+    const uuidPedido    = @json($pedido->reference_uuid);
 
     if (btnAbrirModal) {
         btnAbrirModal.addEventListener('click', function () {
@@ -322,7 +323,7 @@
                     new bootstrap.Modal(modalEl).show();
                 }
             } else {
-                window.location.href = '{{ route('pedido.form-upload', $pedido->id) }}';
+                window.location.href = '{{ url('/pedido') }}/' + uuidPedido + '/upload-comprovativo';
             }
         });
     }

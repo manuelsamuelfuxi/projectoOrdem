@@ -153,14 +153,16 @@
 
         /* ── Categoria + número, por baixo da foto ────────────────────── */
         .info-foto {
-            position: absolute;
-            top: 17mm; right: 16mm;
-            width: 15mm;
-            text-align: center;
-            font-size: 8pt;
-            font-weight: bold;
-            z-index: 2;
-        }
+    position: absolute;
+    top: 19mm;
+    right: 2mm;           /* ajustado para manter centrado com a caixa mais larga */
+    width: 26mm;          /* alargado para caber "Nº 2026/00005" numa linha */
+    text-align: center;
+    font-size: 6pt;
+    font-weight: bold;
+    z-index: 2;
+    white-space: nowrap;  /* impede a quebra de linha */
+}
 
         /* ── QR code ──────────────────────────────────────────────────── */
         .qr-caixa {

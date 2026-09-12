@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\QrCode;
 
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;

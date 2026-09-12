@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Publico;
 
 use App\Models\Application;
 use App\Models\ConfiguracaoPagamento;
@@ -429,16 +429,18 @@ $fotoUrl = $disk->url($fotoPath);
      * enum, e é automaticamente respeitada aqui.
      */
     private function garantirTransicaoValida(Application $pedido, EstadoPedido $destino): void
-    {
-        $estadoAtual = EstadoPedido::from($pedido->status);
+{
+    $estadoAtual = $pedido->status instanceof EstadoPedido
+        ? $pedido->status
+        : EstadoPedido::from($pedido->status);
 
-        if (!$estadoAtual->podeTransitarPara($destino)) {
-            throw new \DomainException(
-                "Não é possível concluir esta ação: o pedido está em '{$estadoAtual->rotulo()}' " .
-                "e não pode transitar para '{$destino->rotulo()}'."
-            );
-        }
+    if (!$estadoAtual->podeTransitarPara($destino)) {
+        throw new \DomainException(
+            "Não é possível concluir esta ação: o pedido está em '{$estadoAtual->rotulo()}' " .
+            "e não pode transitar para '{$destino->rotulo()}'."
+        );
     }
+}
 
     
 }

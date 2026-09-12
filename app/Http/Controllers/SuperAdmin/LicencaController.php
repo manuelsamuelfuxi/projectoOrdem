@@ -3,51 +3,34 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PreviewLicencaRequest;
 use App\Models\Application;
-use App\Services\LicencaDadosService;
-use App\Services\LicencaPdfService;
+use App\Services\Licenca\LicencaDadosService;
+use App\Services\Licenca\LicencaPdfService;
+use Illuminate\Http\Request;
 
 class LicencaController extends Controller
 {
-    private LicencaDadosService $licencaDadosService;
-    private LicencaPdfService $licencaPdfService;
-
-    public function __construct(LicencaDadosService $licencaDadosService, LicencaPdfService $licencaPdfService)
-    {
-        $this->licencaDadosService = $licencaDadosService;
-        $this->licencaPdfService = $licencaPdfService;
-    }
+    public function __construct(
+        private readonly LicencaDadosService $dadosService,
+        private readonly LicencaPdfService $pdfService,
+    ) {}
 
     /**
-     * Pré-visualização do PDF da licença — SÓ LEITURA. Não grava nada na
-     * BD, não altera o status do pedido, não dispara nenhum evento.
+     * Rota provisória de preview, usada apenas durante a construção do
+     * documento. Aceita ?pedido=ID na query string para testar com um
+     * Application específico; sem parâmetro, usa o mais recente.
+     *
+     * TODO: remover esta rota/método quando o fluxo real de emissão
+     * (EmissaoLicencaService, via super-admin.pedidos) estiver ligado.
      */
-    public function preview(PreviewLicencaRequest $request, Application $pedido)
-    {
-        $dados = $this->licencaDadosService->prepararDados($pedido);
-        $pdf = $this->licencaPdfService->gerar($dados);
+    public function preview(Application $pedido)
+{
+    $dados      = $this->dadosService->prepararDados($pedido);
+    $pdfBinario = $this->pdfService->gerar($dados);
 
-        return response($pdf, 200, [
-            'Content-Type'        => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="licenca-preview.pdf"',
-        ]);
-    }
-
-    public function visualizarDocumento(Application $pedido)
-    {
-        if ($pedido->status !== \App\Enums\EstadoPedido::DOCUMENTO_EMITIDO->value) {
-            abort(404, 'Documento ainda não emitido.');
-        }
-
-        $caminho = storage_path("app/documents/{$pedido->id}.pdf");
-
-        if (!file_exists($caminho)) {
-            abort(404, 'Ficheiro do documento não encontrado.');
-        }
-
-        return response()->file($caminho, [
-            'Content-Type' => 'application/pdf',
-        ]);
-    }
+    return response($pdfBinario, 200, [
+        'Content-Type'        => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="licenca-preview.pdf"',
+    ]);
+}
 }

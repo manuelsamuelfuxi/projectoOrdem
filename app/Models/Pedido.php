@@ -140,12 +140,12 @@ class Pedido extends Model
             'changed_by'  => $utilizador?->id,
         ]);
 
-        match($novoStatus) {
-            EstadoPedido::PAGAMENTO_CONFIRMADO => event(new PagamentoConfirmado($this)),
-            EstadoPedido::APROVADO             => event(new PedidoAprovado($this)),
-            EstadoPedido::DOCUMENTO_EMITIDO    => event(new DocumentoEmitido($this, $utilizador)),
-            default                            => null,
-        };
+       match($novoStatus) {
+    EstadoPedido::PAGAMENTO_CONFIRMADO => event(new PagamentoConfirmado($this)),
+    EstadoPedido::APROVADO             => event(new PedidoAprovado($this)),
+    EstadoPedido::DOCUMENTO_EMITIDO    => event(new DocumentoEmitido($this, $this->document_type)),
+    default                            => null,
+};
     }
 
     // ── Relatórios ────────────────────────────────────────────────────────────

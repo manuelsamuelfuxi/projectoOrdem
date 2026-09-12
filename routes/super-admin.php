@@ -6,6 +6,7 @@ use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\PedidoController;
 use App\Http\Controllers\SuperAdmin\RelatorioController;
 use App\Http\Controllers\SuperAdmin\PerfilController;
+use App\Http\Controllers\SuperAdmin\CarteiraController;
 use App\Http\Controllers\SuperAdmin\LicencaController;
 
 Route::get("/dashboard", [DashboardController::class, "index"])->name("dashboard");
@@ -29,13 +30,25 @@ Route::prefix("admins")->name("admins.")->group(function () {
 Route::prefix("pedidos")->name("pedidos.")->group(function () {
     Route::get("/aprovados-financeiramente", [PedidoController::class, "aprovadosFinanceiramente"])->name("financeiramente-aprovados");
     Route::post("/{pedido}/aprovar-emissao", [PedidoController::class, "aprovarEmissao"])->name("aprovar-emissao");
+
+    // NOVO — emitir em massa todos os pedidos pendentes de emissão
+    Route::post("/aprovar-emissao-todas", [PedidoController::class, "aprovarEmissaoTodas"])->name("aprovar-emissao-todas");
+
     Route::post("/{pedido}/rejeitar", [PedidoController::class, "rejeitar"])->name("rejeitar");
 });
 
-// Licenças (geração/visualização do documento em si)
-Route::prefix("licencas")->name("licencas.")->group(function () {
+// Carteira (geração/visualização do documento em si)
+Route::prefix("carteira")->name("carteira.")->group(function () {
+    // NOVO — junta todas as carteiras emitidas num único PDF e mostra inline
+    Route::get("/visualizar-todas", [CarteiraController::class, "visualizarTodas"])->name("visualizar-todas");
+
+    Route::get("/{pedido}/preview", [CarteiraController::class, "preview"])->name("preview");
+    Route::get("/{pedido}/documento", [CarteiraController::class, "visualizarDocumento"])->name("documento");
+});
+
+// Licença (documento em construção — rota provisória, só para visualizar o PDF durante o desenvolvimento)
+Route::prefix("licenca")->name("licenca.")->group(function () {
     Route::get("/{pedido}/preview", [LicencaController::class, "preview"])->name("preview");
-    Route::get("/{pedido}/documento", [LicencaController::class, "visualizarDocumento"])->name("documento");
 });
 
 // Relatórios

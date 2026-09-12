@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Carteira;
 
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\QrCode\QrCodeService;
 
-class LicencaPdfService
+class CarteiraPdfService
 {
     private QrCodeService $qrCodeService;
 
@@ -21,7 +22,7 @@ class LicencaPdfService
     {
         $dados['qrCodeDataUri'] = $this->qrCodeService->gerarDataUri($dados['urlVerificacao']);
 
-        return Pdf::loadView('pdf.licenca-estrutura', $dados)
+        return Pdf::loadView('pdf.carteira', $dados)
     ->setPaper('a4', 'portrait')
     ->output();
     }

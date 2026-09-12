@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Publico;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ConsultarPedidoRequest;
 use App\Http\Requests\EnviarComprovativoRequest;
-use App\Services\ConsultaService;
-use App\Services\PagamentoService;
+use App\Services\Publico\ConsultaService;
+use App\Services\Admin\PagamentoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -14,13 +14,15 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ConsultaController extends Controller
 {
-
-
     public function __construct(
-    private ConsultaService $consultaService,
-    private PagamentoService $pagamentoService,
-) {}
+        private ConsultaService $consultaService,
+        private PagamentoService $pagamentoService,
+    ) {}
 
+    public function form(): View
+    {
+        return view("publico.consulta.form");
+    }
 
     public function consultar(ConsultarPedidoRequest $request): View|RedirectResponse
     {
@@ -69,4 +71,9 @@ class ConsultaController extends Controller
     {
         return $this->consultaService->baixarFichaCobranca($uuid);
     }
+
+    public function baixarCarteira(string $uuid): BinaryFileResponse
+{
+    return $this->consultaService->baixarCarteira($uuid);
+}
 }

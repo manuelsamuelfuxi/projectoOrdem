@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\RelatorioService; // <-- Nome alterado aqui
+use App\Services\Admin\RelatorioService; // <-- Nome alterado aqui
 
 class RelatorioController extends Controller
 {

@@ -65,6 +65,12 @@ Route::prefix("consulta")->name("consulta.")->group(function () {
         ->where("uuid", "[0-9a-fA-F-]{36}")
         ->middleware("throttle:public-query");
 
+    // NOVO — download da carteira profissional já emitida
+    Route::get("/{uuid}/baixar-carteira", [ConsultaController::class, "baixarCarteira"])
+        ->name("baixar-carteira")
+        ->where("uuid", "[0-9a-fA-F-]{36}")
+        ->middleware("throttle:public-query");
+
     Route::get("/verificar", [ConsultaController::class, "verificarPorQrCode"])
         ->name("verificar")
         ->middleware("throttle:public-query");
@@ -112,3 +118,5 @@ Route::get("/legislacao", fn() => view("publico.legislacao"))->name("legislacao"
 Route::get("/pedido/preview/{tipo}", [PedidoController::class, "previewDocumento"])
     ->name("pedido.preview")
     ->whereIn("tipo", array_column(TipoDocumento::cases(), "value"));
+
+Route::get("/pedido/cartao-membro", [PedidoController::class, "formCartaoMembro"])->name("pedido.cartao-membro.form");

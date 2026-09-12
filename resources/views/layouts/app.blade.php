@@ -821,6 +821,9 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDrawer(); });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@include('partials.modal-mensagens')
+
 @stack("scripts")
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Publico;
 
 use App\Models\Pedido;
 use App\Models\Documento;
@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Enums\EstadoPedido;
 
 class ConsultaService
 {
@@ -104,4 +105,23 @@ class ConsultaService
 
         return 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath));
     }
+
+public function baixarCarteira(string $referenceUuid): BinaryFileResponse
+{
+    $pedido = $this->buscarPedido($referenceUuid);
+
+    if ($pedido->status !== EstadoPedido::DOCUMENTO_EMITIDO) {
+        abort(404, 'A carteira profissional ainda não foi emitida para este pedido.');
+    }
+
+    $path = storage_path("app/documents/{$pedido->id}.pdf");
+
+    if (!file_exists($path)) {
+        abort(404, 'Ficheiro da carteira profissional não encontrado.');
+    }
+
+    $safeProcessNumber = str_replace(['/', '\\'], '-', $pedido->process_number);
+
+    return response()->download($path, "Carteira_Profissional_{$safeProcessNumber}.pdf");
+}
 }

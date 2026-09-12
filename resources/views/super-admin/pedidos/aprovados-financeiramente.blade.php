@@ -53,6 +53,7 @@
     }
     .doc-carteira { background: #eff6ff; color: #1d4ed8; }
     .doc-licenca  { background: #f0fdf4; color: #16a34a; }
+    .doc-cartao-membro { background: #fdf4ff; color: #a21caf; }
 
     .btn-emitir {
         display: inline-flex; align-items: center; gap: 5px;
@@ -124,6 +125,17 @@
     }
     .btn-confirmar-gerar:hover { background: #15803d; }
 
+    .btn-ver-pdf {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 500;
+    background: white; color: #1d4ed8;
+    padding: 6px 14px;
+    border: 1px solid #bfdbfe; cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.btn-ver-pdf:hover { background: #eff6ff; }
+
     @media (max-width: 768px) {
         .data-table thead th:nth-child(3),
         .data-table tbody td:nth-child(3) { display: none; }
@@ -169,36 +181,59 @@
         </thead>
         <tbody>
             @forelse($pedidos as $pedido)
+            @php
+                $classeBadge = match($pedido->document_type) {
+                    'carteira'      => 'doc-carteira',
+                    'licenca'       => 'doc-licenca',
+                    'cartao_membro' => 'doc-cartao-membro',
+                    default         => 'doc-licenca',
+                };
+
+                $rotaPreview = match($pedido->document_type) {
+                    'licenca' => route('super-admin.licenca.preview', $pedido),
+                    default   => route('super-admin.carteira.preview', $pedido),
+                };
+            @endphp
             <tr>
                 <td class="process-num">{{ $pedido->process_number }}</td>
                 <td class="candidate-name">{{ $pedido->full_name }}</td>
                 <td>
-                    <span class="doc-type-badge {{ $pedido->document_type === 'carteira' ? 'doc-carteira' : 'doc-licenca' }}">
-                        {{ $pedido->document_type === 'carteira' ? 'Carteira Profissional' : 'Licença Profissional' }}
+                    <span class="doc-type-badge {{ $classeBadge }}">
+                        {{ match($pedido->document_type) {
+                            'carteira' => 'Carteira Profissional',
+                            'licenca' => 'Licença Profissional',
+                            'cartao_membro' => 'Cartão de Membro',
+                            default => $pedido->document_type,
+                        } }}
                     </span>
                 </td>
                 <td style="color:#94a3b8; font-size:12px;">
                     {{ $pedido->pagamento?->confirmed_at ? \Carbon\Carbon::parse($pedido->pagamento->confirmed_at)->format('d/m/Y H:i') : '—' }}
                 </td>
-               {{-- Trecho alterado dentro de aprovados-financeiramente.blade.php — <td class="actions-cell"> --}}
-<td class="actions-cell">
-    {{-- Gerar Licença — abre a pré-visualização do PDF numa nova aba.
-         Não grava nada; a confirmação de emissão acontece dentro
-         dessa tela de preview, não aqui. --}}
-    <a href="{{ route('super-admin.licencas.preview', $pedido) }}"
-   target="_blank"
-   rel="noopener"
-   class="btn-emitir">
-    <i class="fas fa-file-pdf"></i> Gerar Licença
-</a>
+                <td class="actions-cell">
+                    {{-- Gerar Licença — abre modal de confirmação; só ao confirmar é que
+                        o pedido de facto transita para DOCUMENTO_EMITIDO. --}}
+                    <button type="button" class="btn-emitir"
+                        data-url="{{ route('super-admin.pedidos.aprovar-emissao', $pedido) }}"
+                        onclick="abrirModalGerar(this.dataset.url, '{{ addslashes($pedido->full_name) }}')">
+                        <i class="fas fa-file-pdf"></i> Gerar Licença
+                    </button>
 
-    {{-- Botão Rejeitar --}}
-    <button type="button" class="btn-rejeitar"
-        data-url="{{ route('super-admin.pedidos.rejeitar', $pedido) }}"
-        onclick="abrirModalRejeitar(this.dataset.url, '{{ addslashes($pedido->full_name) }}')">
-        <i class="fas fa-times"></i> Rejeitar
-    </button>
-</td>
+                    {{-- Ver PDF — pré-visualização apenas, não altera o estado do pedido. --}}
+                    <a href="{{ $rotaPreview }}"
+                    target="_blank"
+                    rel="noopener"
+                    class="btn-ver-pdf">
+                        <i class="fas fa-eye"></i> Ver PDF
+                    </a>
+
+                    {{-- Botão Rejeitar --}}
+                    <button type="button" class="btn-rejeitar"
+                        data-url="{{ route('super-admin.pedidos.rejeitar', $pedido) }}"
+                        onclick="abrirModalRejeitar(this.dataset.url, '{{ addslashes($pedido->full_name) }}')">
+                        <i class="fas fa-times"></i> Rejeitar
+                    </button>
+                </td>
             </tr>
             @empty
             <tr>
@@ -218,6 +253,27 @@
         {{ $pedidos->links() }}
     </div>
     @endif
+</div>
+
+</div> {{-- fim do .data-card --}}
+
+<div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+    <form method="POST"
+          action="{{ route('super-admin.pedidos.aprovar-emissao-todas') }}"
+          onsubmit="return confirm('Tem a certeza que deseja gerar as licenças de TODOS os pedidos pendentes de emissão? Esta acção não pode ser desfeita.');">
+        @csrf
+        <button type="submit" class="btn-confirmar-gerar">
+            <i class="fas fa-file-pdf"></i> Gerar Todas
+        </button>
+    </form>
+
+    <a href="{{ route('super-admin.carteira.visualizar-todas') }}"
+   target="_blank"
+   rel="noopener"
+   class="btn-cancelar"
+   style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+    <i class="fas fa-eye"></i> Visualizar Todas
+</a>
 </div>
 
 {{-- ===== MODAL GERAR LICENÇA ===== --}}

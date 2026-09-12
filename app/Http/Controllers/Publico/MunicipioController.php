@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Publico;
 
 use App\Http\Controllers\Controller;
-use App\Services\ProvinciaMunicipioService;
+use App\Services\Publico\ProvinciaMunicipioService;
 
 class MunicipioController extends Controller
 {

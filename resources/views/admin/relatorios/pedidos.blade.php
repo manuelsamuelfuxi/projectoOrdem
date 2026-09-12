@@ -149,7 +149,7 @@
                                         $class = $statusClass[$pedido->status->value] ?? 'secondary';
                                     @endphp
                                     <span class="badge bg-{{ $class }}">
-                                        {{ $pedido->status->label() }}
+                                        {{ $pedido->status->rotulo() }}
                                     </span>
                                 </td>
                                 <td>
